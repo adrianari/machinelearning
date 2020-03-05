@@ -1,0 +1,37 @@
+---
+title: "Machine Learning I Group Work"
+author: "Adriana Ricklin, Yvonne Schärli, Christina Sudermann, Carole Mattmann"
+date: "5 März 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import and data cleaning
+
+```{r}
+
+```
+
+# Analysis I: Linear models
+
+```{r}
+
+```
+
+# Analysis II: 
+
+```{r}
+
+```
+
+# Analysis III: 
+
+```{r}
+
+```
+
+
+# Cross validation of all methods implemented

@@ -7,24 +7,29 @@ output:
   html_document: default
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Packages
+```{r}
+
 ```
 
 # Import and data cleaning
 
 ```{r}
-insurance <- 
+insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 ```
 
-# Analysis I: Linear models
-Test
+# Analysis I: Linear models -> Christina
 
 ```{r}
 
 ```
 
-# Analysis II: 
+# Analysis II: Linear models (GAM & Polynomial) -> Yvonne 
 
 ```{r}
 

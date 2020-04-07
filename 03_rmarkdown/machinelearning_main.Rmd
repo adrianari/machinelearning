@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Packages
 ```{r}
+library(ggplot2)
+library(gridExtra)
 
 ```
 
@@ -21,25 +23,120 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
+str(insurance)
+head(insurance)
+
 ```
 
-# Analysis I: Linear models -> Christina
+# Linear models -> Christina
 
 ```{r}
 
 ```
 
-# Analysis II: Linear models (GAM & Polynomial) -> Yvonne 
-
-```{r}
-
-```
-
-# Analysis III: 
+# Linear models (GAM & Polynomial) -> Yvonne 
 
 ```{r}
 
 ```
 
 
-# Cross validation of all methods implemented
+
+# Generalised Linear Models for count data -> Carole 
+
+## Original data
+
+The number of children an insured person has is analysed. We have the following data on children per person. The number of children ranges from 0 to 5 with a median of 1. 
+
+```{r}
+summary(insurance$children)
+```
+
+## Poisson model 
+
+To model count data (number of children) the poisson model is used. An analysis performed beforehand showed that only the variables "charges" and "smoker" have a significant impact on the number of children. 
+
+```{r}
+
+glm.children <- glm(children ~ smoker+charges, 
+                   data=insurance, 
+                   family = "poisson")
+
+summary(glm.children)
+
+```
+
+To get the coefficients, the log transformation needs to be reversed:
+
+```{r}
+exp(coef(glm.children))
+```
+
+Smoker (factor): The model shows that for the factor smoker (yes/no), a smoker has on average 72% of the number of children a non-smoker has. The more common-sense interpretation might be the other way around, that people who have 1 or more children smoke less, but for the moment we have no proof of that. 
+
+Charges: A person with higher charges will on average have more children. If charges are increased by 1000 dollars, the calculated number of children increases by 1.4%. 
+
+```{r eval=FALSE, include=FALSE}
+coef(glm.children)["charges"]*1000
+```
+
+##Simulation of data and comparison
+
+With the calculated model, data is simulated:
+
+```{r echo=FALSE}
+set.seed(5)
+sim.data.glm.children <- simulate(glm.children)
+summary(sim.data.glm.children)
+```
+
+The original and the simulated data are compared visually. The number of children from the simulated data (0-6) seem to be plausible. The distribution has a strong downwards trend starting at 1 like the original data. However the model does not seem to generate enough data with 0 children. 
+
+```{r echo=FALSE}
+df <- data.frame(insurance)
+plot.original <- ggplot(df, 
+                        aes(x=children))+ 
+  geom_bar(fill="darkgreen")+
+  labs(title = "Original data", x="number of children")
+
+plot.sim <- ggplot(sim.data.glm.children, 
+                   aes(x=sim_1))+
+                     geom_bar(fill="darkblue")+
+  labs(title = "Simulated data", x="number of children")
+
+grid.arrange(plot.original, plot.sim, nrow=1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Generalised Linear Models for binomial data -> Carole 
+
+```{r}
+
+```
+
+
+# Cross Validation -> Carole 
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+

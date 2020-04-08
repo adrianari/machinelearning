@@ -40,11 +40,11 @@ head(insurance)
 
 ```
 
+# GLM and cross validation -> Carole 
 
+## Generalised Linear Models for count data -> Carole 
 
-# Generalised Linear Models for count data -> Carole 
-
-## Original data
+### Original data
 
 The number of children an insured person has is analysed. We have the following data on children per person. The number of children ranges from 0 to 5 with a median of 1. 
 
@@ -52,7 +52,7 @@ The number of children an insured person has is analysed. We have the following 
 summary(insurance$children)
 ```
 
-## Poisson model 
+### Poisson model 
 
 To model count data (number of children) the poisson model is used. An analysis performed beforehand showed that only the variables "charges" and "smoker" have a significant impact on the number of children. 
 
@@ -80,7 +80,7 @@ Charges: A person with higher charges will on average have more children. If cha
 coef(glm.children)["charges"]*1000
 ```
 
-##Simulation of data and comparison
+### Simulation of data and comparison
 
 With the calculated model, data is simulated:
 
@@ -108,24 +108,14 @@ grid.arrange(plot.original, plot.sim, nrow=1)
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-# Generalised Linear Models for binomial data -> Carole 
+## Generalised Linear Models for binomial data -> Carole 
 
 ```{r}
 
 ```
 
 
-# Cross Validation -> Carole 
+## Cross Validation -> Carole 
 
 ```{r}
 

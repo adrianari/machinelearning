@@ -24,6 +24,15 @@ library(gridExtra)
 ```{r}
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
+
+
+# smoker = 1 / nonsmoker = 0
+insurance$smoker <- as.character(insurance$smoker)
+insurance$smoker[insurance$smoker == "yes"] <- "1"
+insurance$smoker[insurance$smoker == "no"] <- "0"
+insurance$smoker <- as.factor(insurance$smoker)
+
+
 head(insurance)
 
 ```
@@ -42,7 +51,7 @@ head(insurance)
 
 # GLM and cross validation -> Carole 
 
-## Generalised Linear Models for count data -> Carole 
+## Generalised Linear Models for count data
 
 ### Original data
 
@@ -69,7 +78,7 @@ summary(glm.children)
 To get the coefficients, the log transformation needs to be reversed:
 
 ```{r}
-exp(coef(glm.children))
+exp(coef(glm.children)) 
 ```
 
 Smoker (factor): The model shows that for the factor smoker (yes/no), a smoker has on average 72% of the number of children a non-smoker has. The more common-sense interpretation might be the other way around, that people who have 1 or more children smoke less, but for the moment we have no proof of that. 
@@ -108,12 +117,71 @@ grid.arrange(plot.original, plot.sim, nrow=1)
 ```
 
 
-## Generalised Linear Models for binomial data -> Carole 
+## Generalised Linear Models for binomial data 
+
+
+A model is fitted that predicts if a person is a smoker or not. Only the significant values age, bmi and charges are used. 
 
 ```{r}
+glm.smoker.2 <- glm(smoker ~ age+bmi+charges, 
+                    data=insurance, 
+                    family = "binomial")
 
+summary(glm.smoker.2)
+
+exp(coef(glm.smoker.2)) 
 ```
 
+Age and BMI has a negative effect on smoker. This means the higher a persons BMI and age, the lower the probability that the person is a smoker. 
+Charges has a positive effect. This means the higher a persons charges, the higher is
+the possibility that the person smokes.
+
+### Graphical analysis
+
+This can also be explored graphically, at least for charges it is clearly visible that smokers have higher charges. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+plot1 <- ggplot(data = insurance,
+       mapping = aes(y = smoker,
+                     x = age)) +
+  geom_point(alpha = 0.05)
+
+plot2 <- ggplot(data = insurance,
+       mapping = aes(y = smoker,
+                     x = bmi)) +
+  geom_point(alpha = 0.05)
+
+plot3 <- ggplot(data = insurance,
+       mapping = aes(y = smoker,
+                     x = charges)) +
+  geom_point(alpha = 0.05)
+
+grid.arrange(plot1, plot2, plot3, ncol=3)
+```
+
+### Estimating the model performance
+
+The predicted values are transformed into binary (beforehand they inicated the probability) and compared with the actual data. 
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+fitted.smoker.disc <- ifelse(fitted(glm.smoker.2) < 0.5,
+                           yes = 0, no = 1)
+head(fitted.smoker.disc)
+
+d.obs.fit.smoker <- data.frame(obs = insurance$smoker,
+                             fitted = fitted.smoker.disc)
+head(d.obs.fit.smoker)
+```
+
+We observe the following fit:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+table(obs = d.obs.fit.smoker$obs,
+      fit = d.obs.fit.smoker$fitted)
+```
 
 ## Cross Validation -> Carole 
 

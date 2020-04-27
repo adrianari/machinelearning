@@ -1,15 +1,20 @@
 ---
 title: "Machine Learning I Group Work"
 author: "Adriana Ricklin, Yvonne Schaerli, Christina Sudermann, Carole Mattmann"
-date: "5 Maerz 2020"
+date: "5 March 2020"
 output:
-  pdf_document: default
-  html_document: default
+  html_document: 
+    toc: true
+    number_sections: true
+  pdf_document: 
+    toc: true
+    number_sections: true
 ---
 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
 # Packages
@@ -183,18 +188,102 @@ table(obs = d.obs.fit.smoker$obs,
       fit = d.obs.fit.smoker$fitted)
 ```
 
-## Cross Validation -> Carole 
+## Cross Validation 
+
+Three linear models are cross validated:
 
 ```{r}
+lm.1 <- lm(data=insurance, charges~children+smoker+bmi+age+region+sex)
+
+lm.2 <- lm(data=insurance, charges~children+smoker)
+
+lm.3 <- lm(data=insurance, charges~(poly(bmi, degree=3))
+           +(poly(age, degree=2))+children+smoker)
+```
+
+The in sample performance, using R Squared as measure is the following: 
+
+```{r}
+summary(lm.1)$r.squared
+summary(lm.2)$r.squared
+summary(lm.3)$r.squared
+```
+
+The out of sample performance is computed by using 50:50 training and test data and repeating the process 100 times. 
+
+```{r}
+set.seed(5)
+
+r.squared.lm.1 <- c()
+r.squared.lm.2 <- c()
+r.squared.lm.3 <- c()
+
+for(i in 1:100){
+  
+  # prepare data
+  
+  train.YES <- sample(x=c(TRUE,FALSE), 
+                      size=nrow(insurance), 
+                      replace = TRUE)
+  
+  table(train.YES)
+  
+  insurance.train <- insurance[train.YES, ]
+  insurance.test <- insurance[!train.YES, ]
+  
+  # fit model with train data 
+  
+  lm.1.train <- lm(formula = formula(lm.1), 
+                   data = insurance.train)
+  
+  lm.2.train <- lm(formula = formula(lm.2), 
+                   data = insurance.train)
+  
+  lm.3.train <- lm(formula = formula(lm.3), 
+                   data = insurance.train)
+  
+  # make prediction on test data
+  lm.1.predict <- predict(lm.1.train, 
+                          newdata = insurance.test)
+  
+  lm.2.predict <- predict(lm.2.train, 
+                          newdata = insurance.test)
+  
+  lm.3.predict <- predict(lm.3.train, 
+                          newdata = insurance.test)
+  
+  # compute r.squared and save in list
+  
+  r.squared.lm.1[i] <- cor(lm.1.predict, 
+                           insurance.test$charges)^2
+  
+  r.squared.lm.2[i] <- cor(lm.2.predict, 
+                           insurance.test$charges)^2
+  
+  r.squared.lm.3[i] <- cor(lm.3.predict, 
+                           insurance.test$charges)^2
+}
 
 ```
 
+The out of sample performance, using R Squared as measure is the following: 
 
+```{r}
+#lm.1 
+mean(r.squared.lm.1)
+#lm.2
+mean(r.squared.lm.2)
+#lm.3
+mean(r.squared.lm.3)
+```
 
-
-
-
-
+```{r}
+par(mfrow=c(1,3))
+boxplot(r.squared.lm.1, main="lm.1")
+boxplot(r.squared.lm.2, main="lm.2")
+boxplot(r.squared.lm.3, main="lm.3")
+```
+It can be observed that lm.3 performs slightly better but it is also the most complicated. lm.1 might be the better model, the performance is just slightly lower and it is simpler. 
 
 
 

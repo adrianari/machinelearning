@@ -1,7 +1,7 @@
 ---
 title: "Machine Learning I Group Work"
 author: "Adriana Ricklin, Yvonne Schaerli, Christina Sudermann, Carole Mattmann"
-date: "5 March 2020"
+date: "11 June 2020"
 output:
   html_document: 
     toc: true
@@ -18,11 +18,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Packages
-```{r}
-library(ggplot2)
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 library(gridExtra)
+library(tidyverse) # inclued ggplot2
+library(e1071)     # for SVM
 
 ```
+
 
 # Import and data cleaning
 
@@ -41,6 +43,8 @@ insurance$smoker <- as.factor(insurance$smoker)
 head(insurance)
 
 ```
+
+
 
 # Linear models -> Christina
 
@@ -284,6 +288,150 @@ boxplot(r.squared.lm.2, main="lm.2")
 boxplot(r.squared.lm.3, main="lm.3")
 ```
 It can be observed that lm.3 performs slightly better but it is also the most complicated. lm.1 might be the better model, the performance is just slightly lower and it is simpler. 
+
+# Decision Trees -> Adriana
+
+# Support Vector Machines -> Carole
+
+In this chapter, Support Vector Machines are applied to the insurance dataset. 
+
+## two classes linear
+
+By visual exploration, we discover that smokers and non-smokers form two groups. We fit an SVM for those two groups. The lines in the graph are the first guess of how the data could be divided.
+
+```{r}
+
+
+# guess of hyperplane
+slope <- 0.001
+intercept <- 10
+
+ggplot(data = insurance) +
+  geom_point(aes(x = charges, y = bmi, color=smoker))+
+  geom_abline(slope = slope, intercept = intercept)
+
+
+```
+
+
+A linear SVM is tuned using different cost ranges. 
+
+```{r}
+set.seed(5)
+#get optimal cost 
+cost_range <-
+  c(1e-10,
+    1e-7,
+    1e-5,
+    0.001,
+    0.0025,
+    0.005,
+    0.0075,
+    0.01,
+    0.1,
+    1,
+    5,
+    10,
+    100, 
+    200)
+
+tune.out.1 <- tune(
+  svm,
+  smoker ~ charges+bmi,
+  data = insurance.train,
+  kernel = "linear",
+  ranges = list(cost = cost_range)
+)
+
+```
+
+The following is the best model. A cost of 5 is used. There are 104 support vectors.
+
+```{r}
+#best model 
+bestmod <- tune.out.1$best.model
+summary(bestmod)
+plot(bestmod, insurance.train, bmi~charges)
+
+```
+
+The confision matrices and the classifiaction error rate for train and test data are:
+
+```{r}
+# confusion matrix train
+confusion.lin.train <- table(predict = predict(bestmod, insurance.train),
+      truth = insurance.train$smoker)
+confusion.lin.train
+
+#classification error rate train
+(confusion.lin.train[1,2]+confusion.lin.train[2,1])/sum(confusion.lin.train[1:2,1:2])
+
+```
+
+```{r}
+# confusion matrix linear test
+confusion.lin.test <- table(predict = predict(bestmod, insurance.test),
+      truth = insurance.test$smoker)
+confusion.lin.test
+
+#classification error rate test
+(confusion.lin.test[1,2]+confusion.lin.test[2,1])/sum(confusion.lin.test[1:2,1:2])
+
+```
+
+## two classes polynomial
+
+A polynomial model was also tested but the classification error rate was slightly higher: 
+
+```{r}
+set.seed(5)
+#get optimal cost and degree for polynomial
+
+cost_range <-
+  c(1e-10,
+    1e-7,
+    1e-5,
+    0.001,
+    0.0025,
+    0.005,
+    0.0075,
+    0.01,
+    0.1,
+    1,
+    5,
+    10,
+    100)
+
+degree_range <- 2:4
+
+tune.out.poly <- tune(
+  svm,
+  smoker ~ charges+bmi,
+  data = insurance.train,
+  kernel = "polynomial",
+  ranges = list(cost = cost_range, degree = degree_range))
+
+#best model poly
+tune.out.poly$best.parameters
+bestmod.poly <- tune.out.poly$best.model
+summary(bestmod.poly)
+plot(bestmod.poly, insurance.train, bmi~charges)
+
+
+# confusion matrix 
+confusion.poly.train <- table(predict = predict(bestmod.poly, insurance.train),
+      truth = insurance.train$smoker)
+
+confusion.poly.test <- table(predict = predict(bestmod.poly, insurance.test),
+      truth = insurance.test$smoker)
+
+#classification error rate 
+
+(confusion.poly.train[1,2]+confusion.poly.train[2,1])/sum(confusion.poly.train[1:2,1:2])
+
+(confusion.poly.test[1,2]+confusion.poly.test[2,1])/sum(confusion.poly.test[1:2,1:2])
+
+```
 
 
 

@@ -435,3 +435,6 @@ confusion.poly.test <- table(predict = predict(bestmod.poly, insurance.test),
 
 
 
+
+# Neural Networks
+# Cross validation and discussion

@@ -355,6 +355,7 @@ Even if the latest model is performing the best compared to the others, it is al
 
 # Linear models (GAM & Polynomial) -> Yvonne 
 
+Graphical analysis
 As we can see from the following plot, the models are not always linear.
 ```{r}
 gg.age.charges <- ggplot(data = insurance,
@@ -363,12 +364,44 @@ gg.age.charges <- ggplot(data = insurance,
   geom_point()
 gg.age.charges + geom_smooth()
 ```
+Clearly visible is the increase in costs up to about 10,000 with increasing age. The dependence of amount and costs above 10,000 is more difficult to predict due to the non-linearity.
 
+
+Quadratic effects
+We add linearity to the model by adding a square term to charges.
+```{r}
+# Model with a linear effect for charges
+lm.insurance.1 <- lm(age ~ sex + bmi + children + charges, data = insurance)
+
+#Model with a quadratic effect for charges
+lm.insurance.2 <- update(lm.insurance.1, . ~ . + I(charges^2))
+```
+
+The F-test is used to test the qudrate term.
+```{r}
+anova(lm.insurance.1, lm.insurance.2)
+```
+The F-test shows a strong indication charges requires a quadratic term.
+
+The graphical result is shown below.
+```{r}
+gg.age.charges + 
+  geom_smooth(method = "lm", 
+              formula = y ~ poly(x, degree = 2))
+```
 
 
 ```{r}
 
 ```
+
+
+```{r}
+
+```
+
+
+
 
 # GLM and cross validation -> Carole 
 

@@ -367,7 +367,7 @@ gg.age.charges <- ggplot(data = insurance,
   geom_point()
 gg.age.charges + geom_smooth()
 ```
-Clearly visible is the increase in costs up to about 10,000 with increasing age. The dependence of amount and costs above 10,000 is more difficult to predict due to the non-linearity.
+Clearly visible is the increase in costs up to about 18'000 with increasing age. The dependence of amount and costs above 10,000 is more difficult to predict due to the non-linearity.
 
 
 Quadratic effects
@@ -392,6 +392,28 @@ gg.age.charges +
   geom_smooth(method = "lm", 
               formula = y ~ poly(x, degree = 2))
 ```
+
+The first cost increase looks more like a linear model. What does the result look like if the costs are brought above 18'000? This will be examined in the following considerations.
+
+```{r}
+insurance.part2 <- filter(insurance, charges > 18000 )
+```
+
+```{r}
+gg.age.charges.part2 <- ggplot(data = insurance.part2,
+                              mapping = aes (y = age,
+                                             x = charges)) +
+  geom_point()
+gg.age.charges.part2 + geom_smooth()
+```
+
+```{r}
+lm.insurance.11 <- lm(age ~ sex + bmi + children +charges, data = insurance.part2)
+lm.insurance.12 <- update(lm.insurance.11, . ~ . + I(charges^2))
+
+anova(lm.insurance.11, lm.insurance.12)
+```
+The result shows that there is no strong evidence that charges needs a quadratic term. The model appeard to be linear.
 
 
 

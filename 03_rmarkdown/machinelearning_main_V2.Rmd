@@ -736,14 +736,61 @@ text(tree.regression.charges)
 summary(tree.regression.charges)
 ```
 
-We receive a tree with four end nodes and two determind variables, as
+We receive a tree with four end nodes and two determining variables, as also the summary further demonstrates:
 
 ```{r}
 summary(tree.regression.charges)
 ```
 
+### Prediction
+
+```{r}
+tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")
+plot(tree.regression.charges.pred, insurance$charges)
+abline(0 ,1)
+```
+
+### Comparison Prediction <-> True Values
+
+```{r}
+error_regression.charges1 <- tree.regression.charges.pred-insurance$charges
+element_ID.regression.charges <- 1:length(error_regression.charges1)
+plot(element_ID.regression.charges, error_regression.charges1)
+title(main="Analysis of the residuals")
+abline(0 ,0, lwd=5,lty="dotted")
+abline(sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+abline(-sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+```
+
+We clearly can furthermore clearly see that the variable is not distributed according to the normal distribution. 
+
+```{r}
+error_regression1_dataframe.charges <- tibble(element_ID.regression.charges, error_regression.charges1)
+ggplot(data=error_regression1_dataframe.charges) + geom_boxplot(aes(y=error_regression.charges1))
+hist(error_regression.charges1)
+
+RSS_charges <- sum((insurance[7]-tree.regression.charges.pred)^2)
+MSE_charges <- RSS_charges/length(tree.regression.charges.pred) #average of the squares of the errors = 33.45 --> overfit? (in the data, durchschnitt = 30.xx)
+deviation_charges <- sqrt(MSE_charges)
+```
 
 
+## Train-Test-Approach
+
+Again, we use the train-test approach to demonstrate the importance to not use all the data to train one's modell.
+
+```{r}
+ratio <- 0.7
+total <- nrow(insurance)
+
+train.charges <- sample(1:total, as.integer(total * ratio))
+
+tree.regression.charges2 <- tree(charges~., insurance, subset=train)
+plot(tree.regression.charges2)
+text(tree.regression.charges2, pretty=12, cex=0.75)
+```
+
+It is already 
 
 
 

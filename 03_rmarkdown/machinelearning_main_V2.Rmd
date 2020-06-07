@@ -620,7 +620,7 @@ Differentiating could solve this issue. However, then we would have rows of diff
 To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
 
 
-### Regression tree - BMI
+## Regression tree - BMI
 
 ```{r}
 set.seed(99999)
@@ -646,7 +646,7 @@ plot(tree.regression.bmi.pred, insurance$bmi)
 abline(0 ,1)
 ```
 
-### Error / Comparison of Prediction <-> True Values
+### Comparison of Prediction <-> True Values
 
 Further, we examine the residuals:
 
@@ -703,7 +703,38 @@ partition.tree(tree.regression.bmi2)
 ```
 
 
+### Error Analysis
 
+```{r}
+errors.2.in <- predict(tree.regression.bmi2, insurance[train,], type="vector")-insurance[train,]$bmi
+element.2.in <- as.integer(names(errors.2.in))
+errors.2.in_dataframe <- tibble(element.2.in,errors.2.in,"TRAIN")
+colnames(errors.2.in_dataframe) <- c('ID','error','type')
+errors.2 <- predict(tree.regression.bmi2, insurance[-train,], type="vector")-insurance[-train,]$bmi
+element.2 <- 1:length(errors.2)
+element.2 <- as.integer(names(errors.2))
+errors.2.out_dataframe <- tibble(element.2,errors.2,"TEST")
+colnames(errors.2.out_dataframe) <- c('ID','error','type')
+
+errors.2_dataframe <- bind_rows(errors.2.in_dataframe,errors.2.out_dataframe) 
+errors.2_dataframe <- arrange(errors.2_dataframe, ID)
+
+
+ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type)) + 
+  geom_point() + geom_boxplot(alpha = 0.5)
+```
+
+
+## Regression tree - Charges
+
+We now examine the behaviour of the non normalized variable, "charges".
+
+```{r}
+tree.regression.charges <- tree(charges~., data=insurance)
+plot(tree.regression.charges)
+text(tree.regression.charges)
+summary(tree.regression.charges)
+```
 
 
 # Support Vector Machines -> Carole

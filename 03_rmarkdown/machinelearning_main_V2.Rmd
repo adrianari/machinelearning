@@ -683,6 +683,27 @@ Our modell seems not to be perfoming that good. For reference, in the summary of
 Hence, we switch to the train-test approach.
 
 
+```{r}
+ratio <- 0.7
+total <- nrow(insurance)
+
+train <- sample(1:total, as.integer(total * ratio))
+
+tree.regression.bmi2 <- tree(bmi~., insurance, subset=train)
+plot(tree.regression.bmi2)
+text(tree.regression.bmi2, pretty=12, cex=0.75)
+```
+
+By working with the test data, we already can see at this point the importance of doing so. Whereas previously, only charges were thought to by of importance to determine the BMI, it now also shows, that age seems to play a role. 
+
+The corresponding partition where the decision borders are shown can be seen here:
+
+```{r}
+partition.tree(tree.regression.bmi2)
+```
+
+
+
 
 
 # Support Vector Machines -> Carole

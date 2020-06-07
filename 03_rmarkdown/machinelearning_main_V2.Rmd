@@ -727,7 +727,7 @@ ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type))
 
 ## Regression tree - Charges
 
-We now examine the behaviour of the non normalized variable, "charges".
+We now examine the behaviour of the non normalized variable, "charges". First off again with the entire data values.
 
 ```{r}
 tree.regression.charges <- tree(charges~., data=insurance)
@@ -735,6 +735,16 @@ plot(tree.regression.charges)
 text(tree.regression.charges)
 summary(tree.regression.charges)
 ```
+
+We receive a tree with four end nodes and two determind variables, as
+
+```{r}
+summary(tree.regression.charges)
+```
+
+
+
+
 
 
 # Support Vector Machines -> Carole

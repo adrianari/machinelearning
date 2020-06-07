@@ -790,7 +790,28 @@ plot(tree.regression.charges2)
 text(tree.regression.charges2, pretty=12, cex=0.75)
 ```
 
-It is already 
+It is already apparent that for the test approach, the illustration for the tree looks completely different. Whereas there were four nodes before, we now have eight terminal nodes. In terms of variables used for three construction, nothing changed.
+
+```{r}
+summary(tree.regression.charges2)
+partition.tree(tree.regression.charges2)
+
+```
+
+
+### Errors
+```{r}
+tree.regression.bmi.pred2 <- predict(tree.regression.bmi2, insurance[-train,], type="vector")
+RSS_bmi2_asabove <- sum((insurance[train,][3]-tree.regression.bmi.pred2)^2)
+
+
+RSS.bmi2_u_in <- mean(((insurance[train,][3]-predict(tree.regression.bmi2, insurance[train,], type="vector"))^2)$bmi)
+RSS.2_u <- mean(((insurance[-train,][3]-tree.regression.bmi.pred2)^2)$bmi)
+```
+
+
+
+
 
 
 

@@ -590,7 +590,57 @@ boxplot(r.squared.lm.3, main="lm.3")
 ```
 It can be observed that lm.3 performs slightly better but it is also the most complicated. lm.1 might be the better model, the performance is just slightly lower and it is simpler. 
 
+
+
+
+
 # Decision Trees -> Adriana
+
+
+## Regression trees
+
+### Inspectig the Data
+
+To start of with our regression trees, we throw a glance at the continuous variables:
+
+```{r}
+
+hist(insurance$bmi) #--> continuous
+hist(insurance$charges) #--> Verteilung sieht aus wie 1/x-Kurve
+```
+
+One can see that BMI seems to be normally distributed whereas the charges follow a 1/x-function. 
+
+```{r}
+hist(diff(insurance$charges)) 
+```
+
+Differentiating could solve this issue. However, then we would have rows of different lengths which is not applicable for the task. As decision trees themselves do not heavily rely on normal distribution, both BMI and charges will be examined for regression trees. 
+
+To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
+
+
+### Regression tree - BMI
+
+```{r}
+set.seed(99999)
+
+tree.regression.bmi <- tree(bmi~., data=insurance)
+plot(tree.regression.bmi)
+text(tree.regression.bmi)
+
+```
+
+We here receive a tree with three terminal nodes. For variables to determine the BMI, only "charges" have been applied which can also see in below summary:
+
+```{r}
+summary(tree.regression.bmi)
+```
+
+#### Prediction
+
+
+
 
 # Support Vector Machines -> Carole
 

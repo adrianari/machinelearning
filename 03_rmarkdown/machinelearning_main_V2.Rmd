@@ -453,10 +453,16 @@ The s(changes) value of 8,974 is high and allows us to model the existing predic
 plot(gam.insurance.1, residuals = TRUE, select = 1)
 ```
 
+If you only consider the costs greater than 18'000 should be, the result is identical with the previous consideration. A linear model is also preferable in this case.
+```{r}
+gam.insurance.2 <- gam(age ~ sex + s(charges) + children,
+                       data = insurance.part2)
+summary(gam.insurance.2)
 
+```
 
 ```{r}
-
+plot(gam.insurance.2, residuals = TRUE, select = 1)
 ```
 
 

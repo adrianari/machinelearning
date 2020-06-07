@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 library(gridExtra)
 library(tidyverse) # inclued ggplot2
+library(mgcv)      # for GAM
 library(e1071)     # for SVM
 #library(ggplot2)
 
@@ -355,6 +356,8 @@ Even if the latest model is performing the best compared to the others, it is al
 
 # Linear models (GAM & Polynomial) -> Yvonne 
 
+# Polynomial
+
 Graphical analysis
 As we can see from the following plot, the models are not always linear.
 ```{r}
@@ -389,6 +392,11 @@ gg.age.charges +
   geom_smooth(method = "lm", 
               formula = y ~ poly(x, degree = 2))
 ```
+
+
+
+# Generalised Additive Models
+
 
 
 ```{r}

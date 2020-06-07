@@ -638,6 +638,49 @@ summary(tree.regression.bmi)
 ```
 
 #### Prediction
+We here establish a prediction for our BMI tree:
+
+```{r}
+tree.regression.bmi.pred <- predict(tree.regression.bmi, insurance, type="vector")
+plot(tree.regression.bmi.pred, insurance$bmi)
+abline(0 ,1)
+```
+
+### Error / Comparison of Prediction <-> True Values
+
+Further, we examine the residuals:
+
+```{r}
+error_regression1 <- tree.regression.bmi.pred-insurance$bmi
+element_ID.regression <- 1:length(error_regression1)
+plot(element_ID.regression, error_regression1)
+title(main="Analysis of the residuals")
+abline(0 ,0, lwd=5,lty="dotted")
+abline(sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+abline(-sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+```
+
+As can be seen, the residual analysis clearly supports the data to be normally distributed. So it is that most of the residuals are distributed fairly symmetrically around 0. A large portion of the residuals is furthermore within the margins of +- 1 standard deviation.
+
+```{r}
+error_regression1_dataframe <- tibble(element_ID.regression, error_regression1)
+ggplot(data=error_regression1_dataframe) + geom_boxplot(aes(y=error_regression1))
+```
+
+A boxplot further demonstrates the rather normally distributed data. It is apparent for there to be more outliers in the negative y-axis area than the positive y-axis area. 
+
+```{r}
+hist(error_regression1)
+
+RSS_bmi <- sum((insurance[3]-tree.regression.bmi.pred)^2)
+MSE_bmi <- RSS_bmi/length(tree.regression.bmi.pred)
+deviation_bmi <- sqrt(MSE_bmi)
+
+```
+
+Our modell seems not to be perfoming that good. For reference, in the summary of the data for the BMI, the mean was at around 30. Here, we work with a mean squared error of 33.45.
+
+Hence, we switch to the train-test approach.
 
 
 

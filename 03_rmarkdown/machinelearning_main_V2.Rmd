@@ -379,6 +379,7 @@ lm.insurance.1 <- lm(age ~ sex + bmi + children + charges, data = insurance)
 lm.insurance.2 <- update(lm.insurance.1, . ~ . + I(charges^2))
 ```
 
+
 The F-test is used to test the qudrate term.
 ```{r}
 anova(lm.insurance.1, lm.insurance.2)
@@ -440,11 +441,18 @@ The result shows that there is no strong evidence that charges needs a quadratic
 
 # Generalised Additive Models
 
-
+The previous data modelling is now performed with GAM.
+```{r}
+gam.insurance.1 <- gam(age ~ sex + s(charges) + children,
+                       data = insurance)
+summary(gam.insurance.1)
+```
+The s(changes) value of 8,974 is high and allows us to model the existing predictor with a smooth term. The corresponding visualization is shown below.
 
 ```{r}
-
+plot(gam.insurance.1, residuals = TRUE, select = 1)
 ```
+
 
 
 ```{r}

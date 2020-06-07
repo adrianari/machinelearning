@@ -696,7 +696,7 @@ text(tree.regression.bmi2, pretty=12, cex=0.75)
 
 By working with the test data, we already can see at this point the importance of doing so. Whereas previously, only charges were thought to by of importance to determine the BMI, it now also shows, that age seems to play a role. 
 
-The corresponding partition where the decision borders are shown can be seen here:
+The corresponding partition "table" with the the decision borders are shown here:
 
 ```{r}
 partition.tree(tree.regression.bmi2)

@@ -20,15 +20,21 @@ knitr::opts_chunk$set(cache = TRUE)
 # Packages
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 library(gridExtra)
-library(tidyverse) # inclued ggplot2
-library(e1071)     # for SVM
 library(tree)
 library(dplyr)
+library(readr)
+library(randomForest)
+library(e1071)     # for SVM
+library(ISLR)
+library(tibble)
+library(MASS)
+library(ipred)
 library(neuralnet) # for NN
 library(h2o)       # for NN
 library(bit64)     # for NN
 library(h2o)       # for NN
-#library(ggplot2)
+library(ggplot2)
+library(tidyverse) # inclued ggplot2
 ```
 
 
@@ -563,8 +569,8 @@ It can be observed that lm.3 performs slightly better but it is also the most co
 To start of with our regression trees, we throw a glance at the continuous variables:
 
 ```{r}
-hist(insurance$bmi) #--> continuous
-hist(insurance$charges) #--> Verteilung sieht aus wie 1/x-Kurve
+hist(insurance$bmi)
+hist(insurance$charges)
 ```
 
 One can see that BMI seems to be normally distributed whereas the charges follow a 1/x-function. 
@@ -578,7 +584,7 @@ Differentiating could solve this issue. However, then we would have rows of diff
 To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
 
 
-## Regression tree - BMI
+### Regression tree - BMI
 
 ```{r}
 set.seed(99999)
@@ -602,7 +608,7 @@ plot(tree.regression.bmi.pred, insurance$bmi)
 abline(0 ,1)
 ```
 
-### Comparison of Prediction <-> True Values
+#### Comparison of Prediction <-> True Values
 
 Further, we examine the residuals:
 
@@ -655,7 +661,7 @@ The corresponding partition "table" with the the decision borders are shown here
 ```
 
 
-### Error Analysis
+#### Error Analysis
 
 ```{r}
 errors.2.in <- predict(tree.regression.bmi2, insurance[train,], type="vector")-insurance[train,]$bmi
@@ -674,7 +680,7 @@ ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type))
 ```
 
 
-## Regression tree - Charges
+### Regression tree - Charges
 
 We now examine the behaviour of the non normalized variable, "charges". First off again with the entire data values.
 
@@ -691,7 +697,7 @@ We receive a tree with four end nodes and two determining variables, as also the
 summary(tree.regression.charges)
 ```
 
-### Prediction
+#### Prediction
 
 ```{r}
 tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")
@@ -699,7 +705,7 @@ plot(tree.regression.charges.pred, insurance$charges)
 abline(0 ,1)
 ```
 
-### Comparison Prediction <-> True Values
+#### Comparison Prediction <-> True Values
 
 ```{r}
 error_regression.charges1 <- tree.regression.charges.pred-insurance$charges
@@ -723,7 +729,7 @@ deviation_charges <- sqrt(MSE_charges)
 ```
 
 
-## Train-Test-Approach
+#### Train-Test-Approach
 
 Again, we use the train-test approach to demonstrate the importance to not use all the data to train one's modell.
 
@@ -744,12 +750,49 @@ summary(tree.regression.charges2)
 ```
 
 
-### Errors
+#### Errors
 ```{r}
 tree.regression.bmi.pred2 <- predict(tree.regression.bmi2, insurance[-train,], type="vector")
 RSS_bmi2_asabove <- sum((insurance[train,][3]-tree.regression.bmi.pred2)^2)
 RSS.bmi2_u_in <- mean(((insurance[train,][3]-predict(tree.regression.bmi2, insurance[train,], type="vector"))^2)$bmi)
 RSS.2_u <- mean(((insurance[-train,][3]-tree.regression.bmi.pred2)^2)$bmi)
+```
+
+
+
+## Classification Trees
+
+We here examine a decision tree for a non continuous variable. 
+```{r}
+tree.classification.region <- tree(region~., data=insurance, subset=train)
+summary(tree.classification.region)
+```
+
+```{r}
+plot(tree.classification.region)
+text(tree.classification.region, pretty=1, cex=0.75)
+```
+
+
+### Classification Rate
+
+```{r}
+tree.classification.region.pred.ct <- table(tree.classification.region.pred, insurance[train,]$region)
+tree.classification.region.pred.correct <- 0
+tree.classification.region.pred.error <- 0
+for (i1 in 1:4) {
+  for (i2 in 1:4) {
+    if (i1 == i2) {
+      tree.classification.region.pred.correct <- tree.classification.region.pred.correct + tree.classification.region.pred.ct[i1,i2]
+    }else{
+      tree.classification.region.pred.error <- tree.classification.region.pred.error + tree.classification.region.pred.ct[i1,i2]
+    }
+  }
+}
+tree.classification.region.pred.rate <- tree.classification.region.pred.correct/sum(tree.classification.region.pred.ct)
+tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate
+
+tree.classification.region.pred.test <- predict(tree.classification.region, insurance[-train,], type="class")
 ```
 
 

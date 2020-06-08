@@ -675,13 +675,14 @@ hist(insurance$bmi)
 hist(insurance$charges)
 ```
 
-One can see that BMI seems to be normally distributed whereas charges follow a 1/x-function. 
+One can see that BMI seems to be normally distributed whereas charges follows the pattern of a 1/x-function. 
 
 ```{r}
-hist(diff(insurance$charges)) 
+insurance$charges <- log(insurance$charges)
+hist((insurance$charges))
 ```
 
-Differentiating could solve this issue. However, then we would have rows of different lengths which is not applicable for the task. As decision trees themselves do not heavily rely on normal distribution, both BMI and charges will be examined for regression trees. 
+Applying a log solves this issue. 
 
 To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
 
@@ -695,11 +696,14 @@ plot(tree.regression.bmi)
 text(tree.regression.bmi)
 ```
 
-We here receive a tree with six terminal nodes. For variables to determine the BMI, "charges" have been applied as well as if one smokes and from which region noe comes. This can also be seen in below summary:
+We here receive a tree with six terminal nodes. For variables to determine the BMI, "charges" have been applied as well as if one smokes and from which region one comes. This can also be seen in below summary:
 
 ```{r}
 summary(tree.regression.bmi)
 ```
+
+Our residual mean deviance, aka R-squared-error ist at 29.23.
+
 
 #### Prediction
 We here establish a prediction for our BMI tree:
@@ -1125,11 +1129,9 @@ mean((yhat.boost -insurance.test[,"charges"])^2)
 higher test MSE is going to be the worst model --> overfitting effect
 
 
-
-
-
-
-
+```{r}
+insurance$charges <- exp(insurance$charges) #resetting the insurance variable
+```
 
 
 

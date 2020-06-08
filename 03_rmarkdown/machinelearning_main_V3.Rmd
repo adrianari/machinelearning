@@ -945,9 +945,7 @@ for (i1 in 1:3) {
   }
 }
 (tree.classification.region.pred.rate <- tree.classification.region.pred.correct/sum(tree.classification.region.pred.test.ct)) 
-# portion of correctly classified observations 55.0%
 (tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate) 
-# test error (pruned): 45.0%
 ```
 
 
@@ -1004,14 +1002,35 @@ tree.classification.region.pruning
 ```
 
 
+```{r}
+par(mfrow=c(1,2))
+plot(tree.classification.region.pruning$size, tree.classification.region.pruning$dev, type="b")
+plot(tree.classification.region.pruning$k, tree.classification.region.pruning$dev, type="b")
+par(mfrow=c(1,1))
+```
+
+```{r}
+prune.tree.classification.region <- prune.misclass(tree.classification.region, best=4) 
+summary (prune.tree.classification.region)
+plot(prune.tree.classification.region)
+text(prune.tree.classification.region,pretty=0)
+```
 
 
+```{r}
+prune.tree.classification.region.pred <- predict(prune.tree.classification.region,  insurance[-train,], type="class")
+
+prune.tree.classification.region.pred.ct <- table(prune.tree.classification.region.pred, insurance[-train,]$region)
+prune.tree.classification.region.pred.correct <- sum(prune.tree.classification.region.pred==insurance[-train,]$region)/sum(prune.tree.classification.region.pred.ct)
+
+prune.tree.classification.region.pred.testError <- 1 - prune.tree.classification.region.pred.correct
+```
 
 
-
-
-
-
+```{r}
+cat(tree.classification.region.pred.error) 
+cat(prune.tree.classification.region.pred.testError)
+```
 
 
 

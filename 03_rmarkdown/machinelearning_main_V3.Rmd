@@ -28,6 +28,7 @@ library(e1071)     # for SVM
 library(ISLR)
 library(tibble)
 library(MASS)
+library(gbm)
 library(ipred)
 library(neuralnet) # for NN
 library(h2o)       # for NN

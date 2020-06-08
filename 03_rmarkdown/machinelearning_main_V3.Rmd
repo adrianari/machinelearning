@@ -717,6 +717,7 @@ plot(tree.regression.bmi.pred, insurance$bmi)
 abline(0 ,1)
 ```
 
+
 #### Comparison of Prediction <-> True Values
 
 Further, we examine the residuals:
@@ -779,6 +780,12 @@ Our residual mean deviance has now gone from 29.23 to 27.84.
 #### Error Analysis
 
 ```{r}
+tree.regression.bmi2.pred <- predict(tree.regression.bmi2, insurance[-train,], type="vector")
+(RSS.2.train <- mean(((insurance[train,][3]-predict(tree.regression.bmi2, insurance[train,], type="vector"))^2)$bmi))
+(RSS.2.test <- mean(((insurance[-train,][3]-tree.regression.bmi2.pred)^2)$bmi))
+```
+
+```{r}
 errors.2.in <- predict(tree.regression.bmi2, insurance[train,], type="vector")-insurance[train,]$bmi
 element.2.in <- as.integer(names(errors.2.in))
 errors.2.in_dataframe <- tibble(element.2.in,errors.2.in,"TRAIN")
@@ -795,6 +802,7 @@ ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type))
 ```
 
 
+Both dataframes show the about same distribution in regard of the boxplot. 
 
 
 ### Regression tree - Charges
@@ -855,6 +863,8 @@ hist(error_regression.charges1)
 
 Here goes to further show that the data points are slightly skewed.
 
+
+
 ```{r}
 RSS_charges <- sum((insurance[7]-tree.regression.charges.pred)^2)
 MSE_charges <- RSS_charges/length(tree.regression.charges.pred) 
@@ -890,6 +900,13 @@ summary(tree.regression.charges2)
 Our residual mean deivane is now a bit lower at 0.1475 (previously: 0.1592)
 
 
+```{r}
+tree.regression.charges2.pred <- predict(tree.regression.charges2, insurance[-train,], type="vector")
+(RSS.2.train.charges <- mean(((insurance[train,][7]-predict(tree.regression.charges2, insurance[train,], type="vector"))^2)$charges))
+(RSS.2.test.charges <- mean(((insurance[-train,][7]-tree.regression.charges2.pred)^2)$charges))
+```
+
+
 
 #### Errors
 ```{r}
@@ -908,6 +925,7 @@ ggplot(data = errors.2_dataframe.charges, mapping = aes(x = ID,y = error, color 
   geom_point() + geom_boxplot(alpha = 0.5)
 ```
 
+There are a few differences, especially in regard of the outliers between the test and the train data. Roughly, one can say however that the boxplot is about the same for train and test. Also, the outliers in the negative area are for both data sets more spread.
 
 
 ## Classification Trees
@@ -942,7 +960,7 @@ tree.classification.region.pred <- predict(tree.classification.region, insurance
 ```
 
 
-### Classification Rate / Confusion Table
+### Confusion Table for Train Data
 
 We now examine the classification error on the train data.
 
@@ -970,7 +988,7 @@ Our "new" tree manages to reduce our classification error by about 1% for the tr
 
 
 
-### Confusion Table Test Data
+### Confusion Table for Test Data
 
 
 ```{r}

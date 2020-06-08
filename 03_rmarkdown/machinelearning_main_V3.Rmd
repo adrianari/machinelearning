@@ -679,6 +679,9 @@ One can see that BMI seems to be normally distributed whereas charges follows th
 
 ```{r}
 insurance$charges <- log(insurance$charges)
+```
+
+```{r}
 hist(insurance$charges)
 ```
 
@@ -796,21 +799,27 @@ ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type))
 
 ### Regression tree - Charges
 
-We now examine the behaviour of the non normalized variable, "charges". First off again with the entire data values.
+We now examine the behaviour of the variable, "charges". First off again with the entire data values.
 
 ```{r}
+summary(insurance$charges)
 tree.regression.charges <- tree(charges~., data=insurance)
 plot(tree.regression.charges)
 text(tree.regression.charges)
 ```
 
-We receive a tree with four end nodes and three influencing variables, as also the summary further demonstrates:
+We receive a tree with seven end nodes and four influencing variables, as also the summary further demonstrates:
 
 ```{r}
 summary(tree.regression.charges)
 ```
 
+Our residual mean deviane (R-squared-error) us at 0.1592. Note that this value is also log transformed just like the other numbers regarding distribution.
+
+
 #### Prediction
+
+We are now again prediction the data that has already been used for training the modell.
 
 ```{r}
 tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")
@@ -825,13 +834,12 @@ error_regression.charges1 <- tree.regression.charges.pred-insurance$charges
 element_ID.regression.charges <- 1:length(error_regression.charges1)
 plot(element_ID.regression.charges, error_regression.charges1)
 title(main="Analysis of the residuals")
-abline(0 ,0, lwd=5,lty="dotted")
+abline(mean(error_regression.charges1),0, lwd=5,lty="dotted")
 abline(sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
 abline(-sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
 ```
 
-We  can furthermore clearly see that the variable is not distributed according to the normal distribution. 
-
+We  can furthermore clearly see that the residuals are roughly normalized, with an approximate mean of 0.
 
 
 ```{r}

@@ -652,7 +652,7 @@ plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
-By working with the test data, we already can see at this point the importance of doing so. Whereas previously, only charges were thought to by of importance to determine the BMI, it now also shows, that age seems to play a role. 
+By working with the test data, we already can see at this point the importance of doing so. Whereas previously, only charges were thought to be of importance to determine the BMI, it now also shows, that age seems to play a role. 
 
 The corresponding partition "table" with the the decision borders are shown here:
 
@@ -746,7 +746,6 @@ It is already apparent that for the test approach, the illustration for the tree
 
 ```{r}
 summary(tree.regression.charges2)
-##partition.tree(tree.regression.charges2)
 ```
 
 
@@ -773,6 +772,10 @@ plot(tree.classification.region)
 text(tree.classification.region, pretty=1, cex=0.75)
 ```
 
+```{r}
+tree.classification.region.pred <- predict(tree.classification.region, insurance[train,], type="class")
+```
+
 
 ### Classification Rate
 
@@ -791,12 +794,62 @@ for (i1 in 1:4) {
 }
 tree.classification.region.pred.rate <- tree.classification.region.pred.correct/sum(tree.classification.region.pred.ct)
 tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate
+cat(tree.classification.region.pred.rate)
+cat("\n")
+cat(tree.classification.region.pred.error)
+```
 
+```{r}
 tree.classification.region.pred.test <- predict(tree.classification.region, insurance[-train,], type="class")
+
+```
+
+
+## Pruning
+
+### Pruning the continous BMI variable
+```{r}
+tree.regression.bmi.pruning = cv.tree(tree.regression.bmi2, FUN = prune.tree)
+plot(tree.regression.bmi.pruning)
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(tree.regression.bmi.pruning$size, tree.regression.bmi.pruning$dev, type="b") # type="b": plot both, points and lines
+plot(tree.regression.bmi.pruning$k, tree.regression.bmi.pruning$dev, type="b")
+par(mfrow=c(1,1))
+```
+
+```{r}
+tree.regression.bmi.pruned <- prune.tree(tree.regression.bmi2, best = 4)
+
+plot(tree.regression.bmi.pruned)
+text(tree.regression.bmi.pruned, pretty=1, cex=0.75)
+```
+
+```{r}
+tree.regression.bmi.pruned2 <- prune.tree(tree.regression.bmi2, best = 3)
+
+plot(tree.regression.bmi.pruned2)
+text(tree.regression.bmi.pruned2, pretty=1, cex=0.75)
+```
+
+```{r}
+summary(tree.regression.bmi.pruned)
+summary(tree.regression.bmi.pruned2)
 ```
 
 
 
+
+
+### Pruning the factorial variable regions
+
+```{r}
+tree.classification.region.pruning <- cv.tree(tree.classification.region, FUN = prune.misclass)
+summary(tree.classification.region.pruning)
+tree.classification.region.pruning
+```
 
 
 

@@ -764,16 +764,19 @@ summary(tree.regression.charges2)
 
 #### Errors
 ```{r}
-tree.regression.bmi.pred2 <- predict(tree.regression.bmi2, insurance[-train,], type="vector")
-RSS_bmi2_asabove <- sum((insurance[train,][3]-tree.regression.bmi.pred2)^2)
-RSS.bmi2_u_in <- mean(((insurance[train,][3]-predict(tree.regression.bmi2, insurance[train,], type="vector"))^2)$bmi)
-RSS.2_u <-mean(((insurance[-train,][3]-tree.regression.bmi.pred2)^2)$bmi)
-
-cat(RSS_bmi2_asabove)
-cat("\n")
-cat(RSS.bmi2_u_in)
-cat("\n")
-cat(RSS.2_u)
+errors.2.in.charges <- predict(tree.regression.charges2, insurance[train,], type="vector")-insurance[train,]$charges
+element.2.in.charges <- as.integer(names(errors.2.in.charges))
+errors.2.in_dataframe.charges <- tibble(element.2.in.charges,errors.2.in.charges,"TRAIN")
+colnames(errors.2.in_dataframe.charges) <- c('ID','error','type')
+errors.2.charges <- predict(tree.regression.charges2, insurance[-train,], type="vector")-insurance[-train,]$charges
+element.2.charges <- 1:length(errors.2.charges)
+element.2.charges <- as.integer(names(errors.2.charges))
+errors.2.out_dataframe.charges <- tibble(element.2.charges,errors.2.charges,"TEST")
+colnames(errors.2.out_dataframe.charges) <- c('ID','error','type')
+errors.2_dataframe.charges <- bind_rows(errors.2.in_dataframe.charges,errors.2.out_dataframe.charges) 
+errors.2_dataframe.charges <- arrange(errors.2_dataframe.charges, ID)
+ggplot(data = errors.2_dataframe.charges, mapping = aes(x = ID,y = error, color = type)) + 
+  geom_point() + geom_boxplot(alpha = 0.5)
 ```
 
 
@@ -785,6 +788,8 @@ We here examine a decision tree for a non continuous variable.
 tree.classification.region <- tree(region~., data=insurance)
 summary(tree.classification.region)
 ```
+
+We here see that the error rate is about 66%.
 
 ```{r}
 plot(tree.classification.region)
@@ -822,6 +827,7 @@ cat(tree.classification.region.pred.error)
 
 ```{r}
 tree.classification.region.pred.test <- predict(tree.classification.region, insurance[-train,], type="class")
+cat(tree.classification.region.pred.test)
 
 ```
 
@@ -839,6 +845,25 @@ plot(tree.regression.region2)
 text(tree.regression.region2, pretty=12, cex=0.75)
 ```
 
+```{r}
+tree.classification.region.pred.ct2 <- table(tree.classification.region2, insurance[train,]$region)
+tree.classification.region.pred.correct2 <- 0
+tree.classification.region.pred.error2 <- 0
+for (i1 in 1:4) {
+  for (i2 in 1:4) {
+    if (i1 == i2) {
+      tree.classification.region.pred.correct2 <- tree.classification.region.pred.correct2 + tree.classification.region.pred.ct2[i1,i2]
+    }else{
+      tree.classification.region.pred.error2 <- tree.classification.region.pred.error2 + tree.classification.region.pred.ct2[i1,i2]
+    }
+  }
+}
+tree.classification.region.pred.rate2 <- tree.classification.region.pred.correct2/sum(tree.classification.region.pred.ct2)
+tree.classification.region.pred.error2 <- 1 - tree.classification.region.pred.rate2
+cat(tree.classification.region.pred.rate2)
+cat("\n")
+cat(tree.classification.region.pred.error)
+```
 
 
 ## Pruning

@@ -573,7 +573,7 @@ hist(insurance$bmi)
 hist(insurance$charges)
 ```
 
-One can see that BMI seems to be normally distributed whereas the charges follow a 1/x-function. 
+One can see that BMI seems to be normally distributed whereas charges follow a 1/x-function. 
 
 ```{r}
 hist(diff(insurance$charges)) 
@@ -593,7 +593,7 @@ plot(tree.regression.bmi)
 text(tree.regression.bmi)
 ```
 
-We here receive a tree with three terminal nodes. For variables to determine the BMI, only "charges" have been applied which can also see in below summary:
+We here receive a tree with six terminal nodes. For variables to determine the BMI, "charges" have been applied as well as if one smokes and from which region noe comes. This can also be seen in below summary:
 
 ```{r}
 summary(tree.regression.bmi)
@@ -636,9 +636,12 @@ hist(error_regression1)
 RSS_bmi <- sum((insurance[3]-tree.regression.bmi.pred)^2)
 MSE_bmi <- RSS_bmi/length(tree.regression.bmi.pred)
 deviation_bmi <- sqrt(MSE_bmi)
+cat(RSS_bmi)
+cat("\n")
+cat(MSE_bmi)
 ```
 
-Our modell seems not to be perfoming that good. For reference, in the summary of the data for the BMI, the mean was at around 30. Here, we work with a mean squared error of 33.45.
+Our modell seems not to be perfoming that good. For reference, in the summary of the data for the BMI, the mean was at around 30. Here, we work with a mean squared error of 29.
 
 Hence, we switch to the train-test approach.
 
@@ -653,12 +656,6 @@ text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
 By working with the test data, we already can see at this point the importance of doing so. Whereas previously, only charges were thought to be of importance to determine the BMI, it now also shows, that age seems to play a role. 
-
-The corresponding partition "table" with the the decision borders are shown here:
-
-```{r}
-##partition.tree(tree.regression.bmi2)
-```
 
 
 #### Error Analysis
@@ -827,24 +824,19 @@ text(tree.regression.region2, pretty=12, cex=0.75)
 ### Pruning the continous BMI variable
 ```{r}
 tree.regression.bmi.pruning = cv.tree(tree.regression.bmi2, FUN = prune.tree)
-plot(tree.regression.bmi.pruning)
+plot(tree.regression.bmi.pruning, type = "b")
 ```
+
+We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'500. This is also further shown in below table.
 
 ```{r}
 tree.regression.bmi.pruning
 ```
 
-We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'500.
+
 
 ```{r}
-par(mfrow=c(1,2))
-plot(tree.regression.bmi.pruning$size, tree.regression.bmi.pruning$dev, type="b")
-plot(tree.regression.bmi.pruning$k, tree.regression.bmi.pruning$dev, type="b")
-par(mfrow=c(1,1))
-```
-
-```{r}
-tree.regression.bmi.pruned <- prune.tree(tree.regression.bmi2, best = 4)
+tree.regression.bmi.pruned <- prune.tree(tree.regression.bmi2, best = 5)
 
 plot(tree.regression.bmi.pruned)
 text(tree.regression.bmi.pruned, pretty=1, cex=0.75)

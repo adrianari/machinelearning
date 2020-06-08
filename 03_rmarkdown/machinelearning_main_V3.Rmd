@@ -763,7 +763,7 @@ RSS.2_u <- mean(((insurance[-train,][3]-tree.regression.bmi.pred2)^2)$bmi)
 
 We here examine a decision tree for a non continuous variable. 
 ```{r}
-tree.classification.region <- tree(region~., data=insurance, subset=train)
+tree.classification.region <- tree(region~., data=insurance)
 summary(tree.classification.region)
 ```
 
@@ -799,10 +799,27 @@ cat("\n")
 cat(tree.classification.region.pred.error)
 ```
 
+
+
 ```{r}
 tree.classification.region.pred.test <- predict(tree.classification.region, insurance[-train,], type="class")
 
 ```
+
+
+
+
+### Train-Test Approach
+
+```{r}
+ratio <- 0.6
+total <- nrow(insurance)
+train.region <- sample(1:total, as.integer(total * ratio))
+tree.regression.region2 <- tree(region~., insurance, subset=train)
+plot(tree.regression.region2)
+text(tree.regression.region2, pretty=12, cex=0.75)
+```
+
 
 
 ## Pruning
@@ -814,8 +831,14 @@ plot(tree.regression.bmi.pruning)
 ```
 
 ```{r}
+tree.regression.bmi.pruning
+```
+
+We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'500.
+
+```{r}
 par(mfrow=c(1,2))
-plot(tree.regression.bmi.pruning$size, tree.regression.bmi.pruning$dev, type="b") # type="b": plot both, points and lines
+plot(tree.regression.bmi.pruning$size, tree.regression.bmi.pruning$dev, type="b")
 plot(tree.regression.bmi.pruning$k, tree.regression.bmi.pruning$dev, type="b")
 par(mfrow=c(1,1))
 ```
@@ -850,6 +873,16 @@ tree.classification.region.pruning <- cv.tree(tree.classification.region, FUN = 
 summary(tree.classification.region.pruning)
 tree.classification.region.pruning
 ```
+
+
+
+
+
+
+
+
+
+
 
 
 

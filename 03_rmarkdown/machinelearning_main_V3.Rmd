@@ -679,10 +679,10 @@ One can see that BMI seems to be normally distributed whereas charges follows th
 
 ```{r}
 insurance$charges <- log(insurance$charges)
-hist((insurance$charges))
+hist(insurance$charges)
 ```
 
-Applying a log solves this issue. 
+Applying a log-transformation solves this issue. 
 
 To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
 
@@ -706,7 +706,7 @@ Our residual mean deviance, aka R-squared-error ist at 29.23.
 
 
 #### Prediction
-We here establish a prediction for our BMI tree:
+We here establish a prediction for our BMI tree and also compare the predictions with the true value of the BMI:
 
 ```{r}
 tree.regression.bmi.pred <- predict(tree.regression.bmi, insurance, type="vector")
@@ -750,6 +750,7 @@ cat("\n")
 cat(deviation_bmi)
 ```
 
+So the average estimation of a BMI is about 5.39 BMI points away from the true value (median).
 
 We now switch to the train-test approach.
 
@@ -763,11 +764,13 @@ plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
-By working with the test data, we already can see at this point a change. Were there previously only six end nodes, we now have seven. 
+By working with the test data, we already can see at this point a change, meaning the overfit of working with our entire dataset. Were there previously six end nodes, we now have only three, with variables region (1: southwest, 2: northeast, 3: northwest) as well as age.
 
 ```{r}
 summary(tree.regression.bmi2)
 ```
+
+Our residual mean deviance has now gone from 29.23 to 33.
 
 
 #### Error Analysis

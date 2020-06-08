@@ -1059,7 +1059,7 @@ mean((yhat.bag-insurance.test[,"charges"])^2)
 We also test this
 ```{r}
 ## test with randomForest
-bag.insurance.2=randomForest(charges~., data=insurance, subset=train, mtry=7, importance =TRUE)
+bag.insurance.2=randomForest(charges~., data=insurance, subset=train, mtry=6, importance =TRUE)
 # mtry = 7 means that we should use all 13 predictors for each split of the tree, hence, do bagging (not randomForrest).
 print(bag.insurance.2)
 ```
@@ -1069,6 +1069,65 @@ print(bag.insurance.2)
 importance(bag.insurance.2)
 varImpPlot(bag.insurance.2)
 ```
+
+
+## Random Forests
+
+```{r}
+set.seed(10)
+rf.insurance=randomForest(charges~.,data=insurance,subset=train, mtry=2,importance =TRUE)
+yhat.rf = predict(rf.insurance ,newdata=insurance[-train ,])
+mean((yhat.rf-insurance.test[,"charges"])^2)
+```
+
+```{r}
+importance(rf.insurance)
+varImpPlot (rf.insurance)
+```
+
+
+## Boosting
+
+```{r}
+set.seed (1)
+boost.insurance=gbm(charges~.,data=insurance[train,],
+                 distribution="gaussian",n.trees=5000, interaction.depth=4)
+summary(boost.insurance)
+```
+
+partial dependence plots for most important factors
+```{r}
+plot(boost.insurance ,i="bmi")
+plot(boost.insurance ,i="smoker") 
+```
+
+
+boosted model to predict charges on the test set. Report the MSE.
+```{r}
+yhat.boost=predict(boost.insurance, newdata=insurance[-train,], n.trees=5000)
+mean((yhat.boost -insurance.test[,"charges"])^2)
+```
+
+resetting shrinkage parameter
+```{r}
+boost.insurance = gbm(charges~.,data=insurance[train,],distribution="gaussian",n.trees=5000, interaction.depth=4,shrinkage = 0.02, verbose = FALSE)
+yhat.boost2=predict(boost.insurance,newdata=insurance[-train,], n.trees=5000)
+mean((yhat.boost2 -insurance.test[,"charges"])^2)
+```
+
+again resetting
+```{r}
+boost.insurance2=gbm(charges~.,data=insurance[train,],distribution="gaussian",n.trees=5000, interaction.depth=4,shrinkage = 0.2, verbose = FALSE)
+yhat.boost3=predict(boost.insurance3,newdata=insurance[-train,], n.trees=5000)
+mean((yhat.boost -insurance.test[,"charges"])^2)
+```
+higher test MSE is going to be the worst model --> overfitting effect
+
+
+
+
+
+
 
 
 

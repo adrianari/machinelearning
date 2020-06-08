@@ -3,12 +3,12 @@ title: "Machine Learning I Group Work"
 author: "Adriana Ricklin, Yvonne Schaerli, Christina Sudermann, Carole Mattmann"
 date: "11 June 2020"
 output:
-  html_document: 
-    toc: true
-    number_sections: true
-  pdf_document: 
-    toc: true
-    number_sections: true
+  pdf_document:
+    number_sections: yes
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
 ---
 
 
@@ -785,6 +785,9 @@ tree.regression.bmi2.pred <- predict(tree.regression.bmi2, insurance[-train,], t
 (RSS.2.test <- mean(((insurance[-train,][3]-tree.regression.bmi2.pred)^2)$bmi))
 ```
 
+Interesstingly, we receive a RSS for the train dataset of 30.23 whereas for the test set, the RSS is 28.17. 
+
+
 ```{r}
 errors.2.in <- predict(tree.regression.bmi2, insurance[train,], type="vector")-insurance[train,]$bmi
 element.2.in <- as.integer(names(errors.2.in))
@@ -802,7 +805,7 @@ ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type))
 ```
 
 
-Both dataframes show the about same distribution in regard of the boxplot. 
+Both dataframes show the about same distribution as can be seen in the boxplot. 
 
 
 ### Regression tree - Charges

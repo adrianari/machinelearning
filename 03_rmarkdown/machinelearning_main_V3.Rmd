@@ -1051,16 +1051,19 @@ print(bag.insurance)
 yhat.bag = predict(bag.insurance, newdata=insurance[-train,])
 plot(yhat.bag, insurance.test[,"charges"])
 abline(0,1, col="red")
+```
+```{r}
 mean((yhat.bag-insurance.test[,"charges"])^2)
 ```
 
-
+We also test this
 ```{r}
 ## test with randomForest
 bag.insurance.2=randomForest(charges~., data=insurance, subset=train, mtry=7, importance =TRUE)
-# mtry = 13 means that we should use all 13 predictors for each split of the tree, hence, do bagging (not randomForrest).
+# mtry = 7 means that we should use all 13 predictors for each split of the tree, hence, do bagging (not randomForrest).
 print(bag.insurance.2)
 ```
+
 
 ```{r}
 importance(bag.insurance.2)

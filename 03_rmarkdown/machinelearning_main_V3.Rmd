@@ -801,7 +801,7 @@ tree.classification.region.pred <- predict(tree.classification.region, insurance
 ```
 
 
-### Classification Rate
+### Classification Rate / Confusion Table
 
 ```{r}
 tree.classification.region.pred.ct <- table(tree.classification.region.pred, insurance[train,]$region)
@@ -823,47 +823,36 @@ cat("\n")
 cat(tree.classification.region.pred.error)
 ```
 
-
+### Test Data
 
 ```{r}
 tree.classification.region.pred.test <- predict(tree.classification.region, insurance[-train,], type="class")
-cat(tree.classification.region.pred.test)
 
 ```
 
-
-
-
-### Train-Test Approach
-
 ```{r}
-ratio <- 0.6
-total <- nrow(insurance)
-train.region <- sample(1:total, as.integer(total * ratio))
-tree.regression.region2 <- tree(region~., insurance, subset=train)
-plot(tree.regression.region2)
-text(tree.regression.region2, pretty=12, cex=0.75)
-```
-
-```{r}
-tree.classification.region.pred.ct2 <- table(tree.classification.region2, insurance[train,]$region)
-tree.classification.region.pred.correct2 <- 0
-tree.classification.region.pred.error2 <- 0
-for (i1 in 1:4) {
-  for (i2 in 1:4) {
+(tree.classification.region.pred.test.ct <- table(tree.classification.region.pred.test, insurance[-train,]$region))
+tree.classification.region.pred.correct <- 0
+tree.classification.region.pred.error <- 0
+for (i1 in 1:3) {
+  for (i2 in 1:3) {
     if (i1 == i2) {
-      tree.classification.region.pred.correct2 <- tree.classification.region.pred.correct2 + tree.classification.region.pred.ct2[i1,i2]
+      tree.classification.region.pred.correct <- tree.classification.region.pred.correct + tree.classification.region.pred.test.ct[i1,i2]
     }else{
-      tree.classification.region.pred.error2 <- tree.classification.region.pred.error2 + tree.classification.region.pred.ct2[i1,i2]
+      tree.classification.region.pred.error <- tree.classification.region.pred.error + tree.classification.region.pred.test.ct[i1,i2]
     }
   }
 }
-tree.classification.region.pred.rate2 <- tree.classification.region.pred.correct2/sum(tree.classification.region.pred.ct2)
-tree.classification.region.pred.error2 <- 1 - tree.classification.region.pred.rate2
-cat(tree.classification.region.pred.rate2)
-cat("\n")
-cat(tree.classification.region.pred.error)
+(tree.classification.region.pred.rate <- tree.classification.region.pred.correct/sum(tree.classification.region.pred.test.ct)) 
+# portion of correctly classified observations 55.0%
+(tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate) 
+# test error (pruned): 45.0%
 ```
+
+
+
+
+
 
 
 ## Pruning

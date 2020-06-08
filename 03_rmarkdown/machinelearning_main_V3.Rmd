@@ -1033,6 +1033,41 @@ cat(prune.tree.classification.region.pred.testError)
 ```
 
 
+## Bagging
+
+```{r}
+set.seed (5)
+train = sample(1:nrow(insurance), nrow(insurance)/2)
+insurance.test=insurance[-train ,]
+```
+
+```{r}
+bag.insurance=bagging(charges~., data=insurance, subset=train, nbagg=40, coob = TRUE)
+print(bag.insurance)
+#bag.insurance still needs to be squared at this point
+```
+
+```{r}
+yhat.bag = predict(bag.insurance, newdata=insurance[-train,])
+plot(yhat.bag, insurance.test[,"charges"])
+abline(0,1, col="red")
+mean((yhat.bag-insurance.test[,"charges"])^2)
+```
+
+
+```{r}
+## test with randomForest
+bag.insurance.2=randomForest(charges~., data=insurance, subset=train, mtry=7, importance =TRUE)
+# mtry = 13 means that we should use all 13 predictors for each split of the tree, hence, do bagging (not randomForrest).
+print(bag.insurance.2)
+```
+
+```{r}
+importance(bag.insurance.2)
+varImpPlot(bag.insurance.2)
+```
+
+
 
 
 # Support Vector Machines -> Carole

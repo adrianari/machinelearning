@@ -853,7 +853,7 @@ The boxplot clearly shows that there are more outliers in the negative area of t
 hist(error_regression.charges1)
 ```
 
-Here goes further to show that the data points are slightly skewed.
+Here goes to further show that the data points are slightly skewed.
 
 ```{r}
 RSS_charges <- sum((insurance[7]-tree.regression.charges.pred)^2)
@@ -1011,7 +1011,7 @@ tree.regression.bmi.pruning = cv.tree(tree.regression.bmi2, FUN = prune.tree)
 plot(tree.regression.bmi.pruning, type = "b")
 ```
 
-We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'500. This is also further shown in below table.
+We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'250. This is also further shown in below table.
 
 ```{r}
 tree.regression.bmi.pruning
@@ -1020,14 +1020,14 @@ tree.regression.bmi.pruning
 
 
 ```{r}
-tree.regression.bmi.pruned <- prune.tree(tree.regression.bmi2, best = 5)
+tree.regression.bmi.pruned <- prune.tree(tree.regression.bmi2, best = 6)
 
 plot(tree.regression.bmi.pruned)
 text(tree.regression.bmi.pruned, pretty=1, cex=0.75)
 ```
 
 ```{r}
-tree.regression.bmi.pruned2 <- prune.tree(tree.regression.bmi2, best = 3)
+tree.regression.bmi.pruned2 <- prune.tree(tree.regression.bmi2, best = 4)
 
 plot(tree.regression.bmi.pruned2)
 text(tree.regression.bmi.pruned2, pretty=1, cex=0.75)
@@ -1059,10 +1059,20 @@ par(mfrow=c(1,1))
 ```
 
 ```{r}
-prune.tree.classification.region <- prune.misclass(tree.classification.region, best=4) 
+prune.tree.classification.region <- prune.misclass(tree.classification.region, best=3) 
+
 summary (prune.tree.classification.region)
 plot(prune.tree.classification.region)
 text(prune.tree.classification.region,pretty=0)
+```
+
+
+```{r}
+prune.tree.classification.region <- prune.misclass(tree.classification.region, best=5) 
+summary (prune.tree.classification.region)
+plot(prune.tree.classification.region)
+text(prune.tree.classification.region,pretty=0)
+
 ```
 
 
@@ -1078,6 +1088,7 @@ prune.tree.classification.region.pred.testError <- 1 - prune.tree.classification
 
 ```{r}
 cat(tree.classification.region.pred.error) 
+cat("\n")
 cat(prune.tree.classification.region.pred.testError)
 ```
 

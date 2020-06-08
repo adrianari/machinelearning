@@ -633,17 +633,19 @@ A boxplot further demonstrates the rather normally distributed data. It is appar
 
 ```{r}
 hist(error_regression1)
+```
+
+```{r}
 RSS_bmi <- sum((insurance[3]-tree.regression.bmi.pred)^2)
 MSE_bmi <- RSS_bmi/length(tree.regression.bmi.pred)
 deviation_bmi <- sqrt(MSE_bmi)
 cat(RSS_bmi)
 cat("\n")
-cat(MSE_bmi)
+cat(deviation_bmi)
 ```
 
-Our modell seems not to be perfoming that good. For reference, in the summary of the data for the BMI, the mean was at around 30. Here, we work with a mean squared error of 29.
 
-Hence, we switch to the train-test approach.
+We now switch to the train-test approach.
 
 
 ```{r}
@@ -655,7 +657,11 @@ plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
-By working with the test data, we already can see at this point the importance of doing so. Whereas previously, only charges were thought to be of importance to determine the BMI, it now also shows, that age seems to play a role. 
+By working with the test data, we already can see at this point a change. Were there previously only six end nodes, we now have seven. 
+
+```{r}
+summary(tree.regression.bmi2)
+```
 
 
 #### Error Analysis
@@ -677,6 +683,8 @@ ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type))
 ```
 
 
+
+
 ### Regression tree - Charges
 
 We now examine the behaviour of the non normalized variable, "charges". First off again with the entire data values.
@@ -685,10 +693,9 @@ We now examine the behaviour of the non normalized variable, "charges". First of
 tree.regression.charges <- tree(charges~., data=insurance)
 plot(tree.regression.charges)
 text(tree.regression.charges)
-summary(tree.regression.charges)
 ```
 
-We receive a tree with four end nodes and two determining variables, as also the summary further demonstrates:
+We receive a tree with four end nodes and three influencing variables, as also the summary further demonstrates:
 
 ```{r}
 summary(tree.regression.charges)
@@ -710,19 +717,28 @@ element_ID.regression.charges <- 1:length(error_regression.charges1)
 plot(element_ID.regression.charges, error_regression.charges1)
 title(main="Analysis of the residuals")
 abline(0 ,0, lwd=5,lty="dotted")
-abline(sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
-abline(-sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+abline(sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
+abline(-sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
 ```
 
-We clearly can furthermore clearly see that the variable is not distributed according to the normal distribution. 
+We  can furthermore clearly see that the variable is not distributed according to the normal distribution. 
+
+
 
 ```{r}
 error_regression1_dataframe.charges <- tibble(element_ID.regression.charges, error_regression.charges1)
 ggplot(data=error_regression1_dataframe.charges) + geom_boxplot(aes(y=error_regression.charges1))
+```
+
+```{r}
 hist(error_regression.charges1)
 RSS_charges <- sum((insurance[7]-tree.regression.charges.pred)^2)
-MSE_charges <- RSS_charges/length(tree.regression.charges.pred) #average of the squares of the errors = 33.45 --> overfit? (in the data, durchschnitt = 30.xx)
+MSE_charges <- RSS_charges/length(tree.regression.charges.pred) 
 deviation_charges <- sqrt(MSE_charges)
+
+cat(RSS_charges)
+cat("\n")
+cat(deviation_charges)
 ```
 
 
@@ -739,7 +755,7 @@ plot(tree.regression.charges2)
 text(tree.regression.charges2, pretty=12, cex=0.75)
 ```
 
-It is already apparent that for the test approach, the illustration for the tree looks completely different. Whereas there were four nodes before, we now have eight terminal nodes. In terms of variables used for three construction, nothing changed.
+We now receive a tree with exactly the same number of nodes but where the criterias have different values.
 
 ```{r}
 summary(tree.regression.charges2)
@@ -751,7 +767,13 @@ summary(tree.regression.charges2)
 tree.regression.bmi.pred2 <- predict(tree.regression.bmi2, insurance[-train,], type="vector")
 RSS_bmi2_asabove <- sum((insurance[train,][3]-tree.regression.bmi.pred2)^2)
 RSS.bmi2_u_in <- mean(((insurance[train,][3]-predict(tree.regression.bmi2, insurance[train,], type="vector"))^2)$bmi)
-RSS.2_u <- mean(((insurance[-train,][3]-tree.regression.bmi.pred2)^2)$bmi)
+RSS.2_u <-mean(((insurance[-train,][3]-tree.regression.bmi.pred2)^2)$bmi)
+
+cat(RSS_bmi2_asabove)
+cat("\n")
+cat(RSS.bmi2_u_in)
+cat("\n")
+cat(RSS.2_u)
 ```
 
 

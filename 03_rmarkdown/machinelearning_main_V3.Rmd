@@ -1,0 +1,1201 @@
+---
+title: "Machine Learning I Group Work"
+author: "Adriana Ricklin, Yvonne Schaerli, Christina Sudermann, Carole Mattmann"
+date: "11 June 2020"
+output:
+  html_document: 
+    toc: true
+    number_sections: true
+  pdf_document: 
+    toc: true
+    number_sections: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+# Packages
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(gridExtra)
+library(tidyverse) # inclued ggplot2
+library(e1071)     # for SVM
+library(tree)
+library(dplyr)
+library(neuralnet) # for NN
+library(h2o)       # for NN
+library(bit64)     # for NN
+library(h2o)       # for NN
+#library(ggplot2)
+```
+
+
+# Import and data cleaning
+
+```{r}
+insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
+str(insurance)
+# smoker = 1 / nonsmoker = 0
+insurance$smoker <- as.character(insurance$smoker)
+insurance$smoker[insurance$smoker == "yes"] <- "1"
+insurance$smoker[insurance$smoker == "no"] <- "0"
+insurance$smoker <- as.factor(insurance$smoker)
+# female = 1 / male = 0
+insurance$sex <- as.character(insurance$sex)
+insurance$sex[insurance$sex == "female"] <- "1"
+insurance$sex[insurance$sex == "male"] <- "0"
+insurance$sex <- as.factor(insurance$sex)
+# region / SE = 1 / SW = 0 / NE = 2 / NW = 3
+insurance$region <- as.character(insurance$region)
+insurance$region[insurance$region == "southwest"] <- "1"
+insurance$region[insurance$region == "southeast"] <- "0"
+insurance$region[insurance$region == "northeast"] <- "2"
+insurance$region[insurance$region == "northwest"] <- "3"
+insurance$region <- as.factor(insurance$region)
+head(insurance)
+```
+
+
+# Linear models -> Christina
+
+The data set used for this project contains 1338 observations and seven variables containing the age, sex, bmi, children, smoker, region and charges. Those variables are covering continuous and categorical variables.The region as an categorical variable is covering four different levels.
+
+## Basic analysis of continuous variables
+
+Here we will begin with a graphical analysis. Therefore we will plot the response variable against the given predictors to gather first relationships, which can be used later in the modelling process.
+```{r}
+plot(charges ~ age, data =insurance, main = 'Charges against age')
+```
+There seems to be a positive relationship between age and charges.
+```{r}
+plot(charges ~ bmi, data =insurance, main = 'Charges against bmi')
+```
+The above plot is not showing a clear relationship between bmi and the corresponding charges.
+```{r}
+plot(charges ~ children, data =insurance, main = 'Charges against children')
+```
+There might be an affect between the number of children and the charges. As shown above it might be possible to interpret that with a rising number of children the charges a decreasing. Still this is not a clear relationship, more a wide interpretation of the plot.
+
+## Basic analysis of categorical variables
+
+```{r}
+##plot(charges ~ sex, data =insurance, main = 'Charges against sex')
+```
+As shown above there are some differences in the charges, comparing the boxplot for the two given genders. It seems that the range for 50% of the obersavation is bigger than the one for the female group. Also the 95% quantile is about 10'000 lower than the same quantile for the male group.
+
+```{r}
+plot(charges ~ smoker, data =insurance, main = 'Charges against smoker')
+```
+This plot is showing a clear affect of smoking on the charges. As you can see persons who are not smoking having mean charges that are three times less as the one of people who are smoking. even the outliers of the smokers are still in the range where only 50% of the smokers are located.
+```{r}
+##plot(charges ~ region, data =insurance, main = 'Charges against region')
+```
+In this case there isn't any clear realtionship or trend visible between the region and the corresponding charges. Comparing the four regions together seems that there are slightly small diferences in the width of the box, distribution of 50% of the observation as well the setting of the 95% quantile. Those differences will be analysed later.
+
+## Basic analysis of categorical and continous variables  
+
+In this part we want to show exemplary how the relationship between charges and the age can be affected by adding additionally a categorical variable. This can be used for further data explorations and as well be adapted on all other variables. For this section we will just perform this enlargement for the case of the age to illustrate some possible relationships, which also can be helpful for the following modeling process.
+```{r}
+plot(charges ~ age, data = insurance,
+     col = sex,
+     pch = 19,
+     main = "Charges against age (sex)")
+legend( "topleft",
+        pch = 19,
+        legend = c("Female", "Male"),
+        col = c("black", "red"))
+```
+
+```{r}
+plot(charges ~ age, data = insurance,
+     col = smoker,
+     pch = 19,
+     main = "Charges against age (smoker)")
+legend( "topleft",
+        pch = 19,
+        legend = c("No Smoker", "Smoker"),
+        col = c("black", "red"))
+```
+
+```{r}
+plot(charges ~ age, data = insurance,
+     col = region,
+     pch = 19,
+     main = "Charges against age (region)")
+legend( "topleft",
+        pch = 19,
+        legend = c("NE", "NW","SE","SW"),
+        col = c("black", "red" ,"blue" , "green"))
+```
+Since it is possible to have overlapping observations, we will plot the same set-up using the qplot. Having separate facets will avoid overlapping and therefore might serve different results as already seen above.
+```{r}
+qplot(y=charges, x=age,
+      data = insurance,
+      facets = ~ sex)
+lm.insurance <- lm(charges ~ age, data = insurance)
+```
+```{r}
+qplot(y=charges, x=age,
+      data = insurance,
+      facets = ~ smoker)
+```
+```{r}
+qplot(y=charges, x=age,
+      data = insurance,
+      facets = ~ region)
+```
+
+## Fitting a first Linear Model
+
+As usually we will start by fitting a simple regression model to the insurance dataset. Therfore we will start with one variable and add additonal complexity in each following subset. 
+This step-by-step approach helps to explore the data slightly better and will simplify the final modelling.
+
+### Linear Model with one variable
+
+For the first simple regression model we will use the age.
+```{r}
+lm.insurance <- lm(charges ~ age, data = insurance)
+summary(lm.insurance)
+```
+
+#### Coefficent and Interpretation  
+
+As shown in the R Output a person with the age of 0 will have a base charge of 3165.885. This intercept and its interpreation seems to be nonsensical.
+With each year the charges are increasing by 257.7226, which is the slope for this regressionline
+
+#### P-values  
+
+With a value of 2e-16 the age seesm to have a very strong effect on the charges. This means that the slope of the chages is not flat, not zero, so the hypothesisi has to be thrown away.
+
+#### Including the gender as a second variable  
+
+In this subsest we will consider also the sex for modelling a simple regression model.
+```{r}
+lm.insurance.2 <- lm(charges ~ age + sex, data = insurance)
+summary(lm.insurance.2)
+```
+#### Including interaction  
+
+Since a second variable was added we want to explore if there might be significant interaction between age and sex, that might have to be considered for the modeling process. 
+```{r}
+lm.insurance.3 <-lm(charges ~ age * sex, data =insurance)
+summary(lm.insurance.3)
+plot(charges ~ age, data =insurance,
+     main = "Model 'lm.insurance.3'",
+     xlim = c(0, 80), 
+     ylim = c(0, 70000),
+     col = sex)
+##
+grid()
+##
+abline(h = 0, lwd = 0.5)
+abline(v = 0, lwd = 0.5)
+##
+abline(a = coef(lm.insurance.3)[1],
+       b = coef(lm.insurance.3)["age"])
+abline(a = coef(lm.insurance.3)[1] + coef(lm.insurance.3)["sex1"] ,
+       b = coef(lm.insurance.3)["age"] + coef(lm.insurance.3)["age:sex1"],
+       col = "red")
+legend(x = 0.1, y = 70000, 
+       pch = 19,
+       legend = c("Female","Male"), 
+       col = c("black", "red"))
+coef(lm.insurance.3)
+summary(lm.insurance.3)$coefficients
+```
+
+## Final Linear Model Development
+
+In this section we want to find an appropriate model, which accounts all relevant parameters and interactions.
+Afterwards we will then compare the fitted model with a base model and test its performance.
+
+### Linear Model with all variables
+
+```{r}
+lm.insurance.all <- lm(charges ~ age + sex + bmi + children + smoker + region , data = insurance)
+summary(lm.insurance.all)
+```
+As the above R Output shows not all varaibles seems to have a significant effect on the charges.
+
+#### Testing sex before dropping 
+
+Before removing those two variables we first will make a deeper analysis.
+```{r}
+lm.sex <- lm(charges ~ sex, data=insurance)
+summary(lm.sex)
+coef(lm.sex)
+```
+As seen in the output considering only the sex it is not a significant and standalone explaining variable for the charges. Comparing the p-value of the sex within the full model including all possible variables it is so high with a value of 0.693348, that it can be dropped from our final model.
+
+#### Testing region before dropping  
+
+```{r}
+lm.region.1 <- lm(charges ~ region, data = insurance)
+aggregate(charges ~ region, FUN = mean, data =insurance)
+summary(lm.region.1)
+```
+There is strong evidence that the mean charges for northeast is not eqaual to zero.
+But there isn't any evidence that all other regions differ from the reference region northeast.
+To have a better understanding we will make an anova test between the above shown model and a base model lm.region.0 as schon below.
+```{r}
+lm.region.0 <- lm(charges ~ 1 , data = insurance)
+coef(lm.region.0)
+anova(lm.region.0, lm.region.1)
+```
+The anova test shows that there is a low evidence that the model with more parameters(in this case only the region) better fits the data. The F-value seems to be very small and also the p-value is not really significant with 0.03089. Anyhow there is a drop in the RSS, by adding 3 additional parameters of the different regions.
+To have a better understanding we can additionally perform posthoc contrasts to decide afterwards if we will drop the region finally from our model.
+Before performing several posthoc test and repeating this exercise to all possible combinations we will use the ggplot to explore the data quickly upfront. 
+```{r}
+ggplot(data=insurance,
+       mapping = aes(y = charges, x= age))+ geom_point()+geom_smooth(method = 'lm') + facet_grid(. ~region)
+```
+Using the visualization it seems that there seems to be no obvoius differnce and effect. Therfore we decide to drop also the variable region from our linear model.
+
+### Dropping variables from the model  
+
+```{r}
+drop1(lm.insurance.all, test="F")
+lm.insurance.1 <- update(lm.insurance.all, .~. -region -sex)
+formula(lm.insurance.1)
+summary(lm.insurance.1)
+```
+Comparing the summary output of lm.insurance.0 and lm.insurance.1 the latest model is only including variables having a p-value that indicates a significant factor.
+
+### Considering Interactions  
+
+```{r}
+drop1(lm.insurance.1, test="F")
+lm.insurance.2 <- update(lm.insurance.1, .~. +age:bmi + age:children + age:smoker + bmi:children + bmi:smoker + children:smoker)
+summary(lm.insurance.2)
+```
+As the above output shows not all of the added interactions have to be considered in the model. 
+Upfront we also tried to generate a linear model including all possible interactions. Since the output was not satisfying we skiped this analysis at this point. 
+Therfore the working assumption in this step was quite easy by editing only possible and simple interactions. Based on the results we will now drop the unnecessary interactions.
+```{r}
+drop1(lm.insurance.2, test="F")
+lm.insurance.3 <- update(lm.insurance.2, .~. -age:bmi - age:children - age:smoker - bmi:children -children:smoker)
+summary(lm.insurance.3)
+```
+After considering also the interaction between bmi and smoker, which seems to be significant with a small p-value of 2e-16. The variable bmi itself has now a p-value of 0.82014. Therfore lets have a look on the relationship between bmi and smoker to have a better understanding:
+
+```{r}
+ggplot(data=insurance,
+       mapping = aes(y = charges, x= bmi))+ geom_point()+ geom_smooth(method = 'lm') +facet_grid(. ~ smoker)
+```
+As expected there seems to be a clear relationship between charges and bmi, considering if a person is smoking or not. Since this relationship makes even sense from the domain perspective, we will definitly keep this in our model.
+
+
+### Measure of Fit  
+
+In this section we were able to fit several models, having different levels of complexity. 
+For the following analysis we have choosen our four models to measure the individual fit.
+Moreover we will compare them among each other to find the most appropriate model for the given insurance dataset.
+```{r}
+formula(lm.insurance.all)
+summary(lm.insurance.all)$r.squared
+summary(lm.insurance.all)$adj.r.squared
+```
+
+```{r}
+formula(lm.insurance.1)
+summary(lm.insurance.1)$r.squared
+summary(lm.insurance.1)$adj.r.squared
+```
+```{r}
+formula(lm.insurance.2)
+summary(lm.insurance.2)$r.squared
+summary(lm.insurance.2)$adj.r.squared
+```
+
+```{r}
+formula(lm.insurance.3)
+summary(lm.insurance.3)$r.squared
+summary(lm.insurance.3)$adj.r.squared
+```
+For the comparison we used R-Squared and the adjusted R-Squared to measure the performance of our models.
+Since the adjusted R-squared can provide a more precise view of that correlation by also taking into account how many independent variables are added to our particular models against we will base our conclusion on this parameter.
+
+Therefore we are happy to state that the latest model number three is able to explain the charges with a  percentage of 83.82329 % based on the independent variables.
+
+Comparing the latest model with the first one there is an increase of 8.88% in the adjusted R-squared.
+Even if the latest model is performing the best compared to the others, it is always a trade off between the gain in the fit and the corresponding effort.
+
+
+
+# Linear models (GAM & Polynomial) -> Yvonne 
+
+As we can see from the following plot, the models are not always linear.
+```{r}
+gg.age.charges <- ggplot(data = insurance,
+                  mapping = aes (y = age,
+                                 x = charges)) +
+  geom_point()
+gg.age.charges + geom_smooth()
+```
+
+
+
+# GLM and cross validation -> Carole 
+
+## Generalised Linear Models for count data
+
+### Original data
+
+The number of children an insured person has is analysed. We have the following data on children per person. The number of children ranges from 0 to 5 with a median of 1. 
+
+```{r}
+summary(insurance$children)
+```
+
+### Poisson model 
+
+To model count data (number of children) the poisson model is used. An analysis performed beforehand showed that only the variables "charges" and "smoker" have a significant impact on the number of children. 
+
+```{r}
+glm.children <- glm(children ~ smoker+charges, 
+                   data=insurance, 
+                   family = "poisson")
+summary(glm.children)
+```
+
+To get the coefficients, the log transformation needs to be reversed:
+
+```{r}
+exp(coef(glm.children)) 
+```
+
+Smoker (factor): The model shows that for the factor smoker (yes/no), a smoker has on average 72% of the number of children a non-smoker has. The more common-sense interpretation might be the other way around, that people who have 1 or more children smoke less, but for the moment we have no proof of that. 
+
+Charges: A person with higher charges will on average have more children. If charges are increased by 1000 dollars, the calculated number of children increases by 1.4%. 
+
+```{r eval=FALSE, include=FALSE}
+coef(glm.children)["charges"]*1000
+```
+
+### Simulation of data and comparison
+
+With the calculated model, data is simulated:
+
+```{r echo=FALSE}
+set.seed(5)
+sim.data.glm.children <- simulate(glm.children)
+summary(sim.data.glm.children)
+```
+
+The original and the simulated data are compared visually. The number of children from the simulated data (0-6) seem to be plausible. The distribution has a strong downwards trend starting at 1 like the original data. However the model does not seem to generate enough data with 0 children. 
+
+```{r echo=FALSE}
+df <- data.frame(insurance)
+plot.original <- ggplot(df, 
+                        aes(x=children))+ 
+  geom_bar(fill="darkgreen")+
+  labs(title = "Original data", x="number of children")
+plot.sim <- ggplot(sim.data.glm.children, 
+                   aes(x=sim_1))+
+                     geom_bar(fill="darkblue")+
+  labs(title = "Simulated data", x="number of children")
+grid.arrange(plot.original, plot.sim, nrow=1)
+```
+
+
+## Generalised Linear Models for binomial data 
+
+
+A model is fitted that predicts if a person is a smoker or not. Only the significant values age, bmi and charges are used. 
+
+```{r}
+glm.smoker.2 <- glm(smoker ~ age+bmi+charges, 
+                    data=insurance, 
+                    family = "binomial")
+summary(glm.smoker.2)
+exp(coef(glm.smoker.2)) 
+```
+
+Age and BMI has a negative effect on smoker. This means the higher a persons BMI and age, the lower the probability that the person is a smoker. 
+Charges has a positive effect. This means the higher a persons charges, the higher is
+the possibility that the person smokes.
+
+### Graphical analysis
+
+This can also be explored graphically, at least for charges it is clearly visible that smokers have higher charges. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot1 <- ggplot(data = insurance,
+       mapping = aes(y = smoker,
+                     x = age)) +
+  geom_point(alpha = 0.05)
+plot2 <- ggplot(data = insurance,
+       mapping = aes(y = smoker,
+                     x = bmi)) +
+  geom_point(alpha = 0.05)
+plot3 <- ggplot(data = insurance,
+       mapping = aes(y = smoker,
+                     x = charges)) +
+  geom_point(alpha = 0.05)
+grid.arrange(plot1, plot2, plot3, ncol=3)
+```
+
+### Estimating the model performance
+
+The predicted values are transformed into binary (beforehand they inicated the probability) and compared with the actual data. 
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+fitted.smoker.disc <- ifelse(fitted(glm.smoker.2) < 0.5,
+                           yes = 0, no = 1)
+head(fitted.smoker.disc)
+d.obs.fit.smoker <- data.frame(obs = insurance$smoker,
+                             fitted = fitted.smoker.disc)
+head(d.obs.fit.smoker)
+```
+
+We observe the following fit:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+table(obs = d.obs.fit.smoker$obs,
+      fit = d.obs.fit.smoker$fitted)
+```
+
+## Cross Validation 
+
+Three linear models are cross validated:
+
+```{r}
+lm.1 <- lm(data=insurance, charges~children+smoker+bmi+age+region+sex)
+lm.2 <- lm(data=insurance, charges~children+smoker)
+lm.3 <- lm(data=insurance, charges~(poly(bmi, degree=3))
+           +(poly(age, degree=2))+children+smoker)
+```
+
+The in sample performance, using R Squared as measure is the following: 
+
+```{r}
+summary(lm.1)$r.squared
+summary(lm.2)$r.squared
+summary(lm.3)$r.squared
+```
+
+The out of sample performance is computed by using 50:50 training and test data and repeating the process 100 times. 
+
+```{r}
+set.seed(5)
+r.squared.lm.1 <- c()
+r.squared.lm.2 <- c()
+r.squared.lm.3 <- c()
+for(i in 1:100){
+  
+  # prepare data
+  
+  train.YES <- sample(x=c(TRUE,FALSE), 
+                      size=nrow(insurance), 
+                      replace = TRUE)
+  
+  table(train.YES)
+  
+  insurance.train <- insurance[train.YES, ]
+  insurance.test <- insurance[!train.YES, ]
+  
+  # fit model with train data 
+  
+  lm.1.train <- lm(formula = formula(lm.1), 
+                   data = insurance.train)
+  
+  lm.2.train <- lm(formula = formula(lm.2), 
+                   data = insurance.train)
+  
+  lm.3.train <- lm(formula = formula(lm.3), 
+                   data = insurance.train)
+  
+  # make prediction on test data
+  lm.1.predict <- predict(lm.1.train, 
+                          newdata = insurance.test)
+  
+  lm.2.predict <- predict(lm.2.train, 
+                          newdata = insurance.test)
+  
+  lm.3.predict <- predict(lm.3.train, 
+                          newdata = insurance.test)
+  
+  # compute r.squared and save in list
+  
+  r.squared.lm.1[i] <- cor(lm.1.predict, 
+                           insurance.test$charges)^2
+  
+  r.squared.lm.2[i] <- cor(lm.2.predict, 
+                           insurance.test$charges)^2
+  
+  r.squared.lm.3[i] <- cor(lm.3.predict, 
+                           insurance.test$charges)^2
+}
+```
+
+The out of sample performance, using R Squared as measure is the following: 
+
+```{r}
+#lm.1 
+mean(r.squared.lm.1)
+#lm.2
+mean(r.squared.lm.2)
+#lm.3
+mean(r.squared.lm.3)
+```
+
+```{r}
+par(mfrow=c(1,3))
+boxplot(r.squared.lm.1, main="lm.1")
+boxplot(r.squared.lm.2, main="lm.2")
+boxplot(r.squared.lm.3, main="lm.3")
+```
+It can be observed that lm.3 performs slightly better but it is also the most complicated. lm.1 might be the better model, the performance is just slightly lower and it is simpler. 
+
+
+
+
+
+# Decision Trees -> Adriana
+
+
+## Regression trees
+
+### Inspectig the Data
+
+To start of with our regression trees, we throw a glance at the continuous variables:
+
+```{r}
+hist(insurance$bmi) #--> continuous
+hist(insurance$charges) #--> Verteilung sieht aus wie 1/x-Kurve
+```
+
+One can see that BMI seems to be normally distributed whereas the charges follow a 1/x-function. 
+
+```{r}
+hist(diff(insurance$charges)) 
+```
+
+Differentiating could solve this issue. However, then we would have rows of different lengths which is not applicable for the task. As decision trees themselves do not heavily rely on normal distribution, both BMI and charges will be examined for regression trees. 
+
+To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
+
+
+## Regression tree - BMI
+
+```{r}
+set.seed(99999)
+tree.regression.bmi <- tree(bmi~., data=insurance)
+plot(tree.regression.bmi)
+text(tree.regression.bmi)
+```
+
+We here receive a tree with three terminal nodes. For variables to determine the BMI, only "charges" have been applied which can also see in below summary:
+
+```{r}
+summary(tree.regression.bmi)
+```
+
+#### Prediction
+We here establish a prediction for our BMI tree:
+
+```{r}
+tree.regression.bmi.pred <- predict(tree.regression.bmi, insurance, type="vector")
+plot(tree.regression.bmi.pred, insurance$bmi)
+abline(0 ,1)
+```
+
+### Comparison of Prediction <-> True Values
+
+Further, we examine the residuals:
+
+```{r}
+error_regression1 <- tree.regression.bmi.pred-insurance$bmi
+element_ID.regression <- 1:length(error_regression1)
+plot(element_ID.regression, error_regression1)
+title(main="Analysis of the residuals")
+abline(0 ,0, lwd=5,lty="dotted")
+abline(sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+abline(-sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+```
+
+As can be seen, the residual analysis clearly supports the data to be normally distributed. So it is that most of the residuals are distributed fairly symmetrically around 0. A large portion of the residuals is furthermore within the margins of +- 1 standard deviation.
+
+```{r}
+error_regression1_dataframe <- tibble(element_ID.regression, error_regression1)
+ggplot(data=error_regression1_dataframe) + geom_boxplot(aes(y=error_regression1))
+```
+
+A boxplot further demonstrates the rather normally distributed data. It is apparent for there to be more outliers in the negative y-axis area than the positive y-axis area. 
+
+```{r}
+hist(error_regression1)
+RSS_bmi <- sum((insurance[3]-tree.regression.bmi.pred)^2)
+MSE_bmi <- RSS_bmi/length(tree.regression.bmi.pred)
+deviation_bmi <- sqrt(MSE_bmi)
+```
+
+Our modell seems not to be perfoming that good. For reference, in the summary of the data for the BMI, the mean was at around 30. Here, we work with a mean squared error of 33.45.
+
+Hence, we switch to the train-test approach.
+
+
+```{r}
+ratio <- 0.7
+total <- nrow(insurance)
+train <- sample(1:total, as.integer(total * ratio))
+tree.regression.bmi2 <- tree(bmi~., insurance, subset=train)
+plot(tree.regression.bmi2)
+text(tree.regression.bmi2, pretty=12, cex=0.75)
+```
+
+By working with the test data, we already can see at this point the importance of doing so. Whereas previously, only charges were thought to by of importance to determine the BMI, it now also shows, that age seems to play a role. 
+
+The corresponding partition "table" with the the decision borders are shown here:
+
+```{r}
+##partition.tree(tree.regression.bmi2)
+```
+
+
+### Error Analysis
+
+```{r}
+errors.2.in <- predict(tree.regression.bmi2, insurance[train,], type="vector")-insurance[train,]$bmi
+element.2.in <- as.integer(names(errors.2.in))
+errors.2.in_dataframe <- tibble(element.2.in,errors.2.in,"TRAIN")
+colnames(errors.2.in_dataframe) <- c('ID','error','type')
+errors.2 <- predict(tree.regression.bmi2, insurance[-train,], type="vector")-insurance[-train,]$bmi
+element.2 <- 1:length(errors.2)
+element.2 <- as.integer(names(errors.2))
+errors.2.out_dataframe <- tibble(element.2,errors.2,"TEST")
+colnames(errors.2.out_dataframe) <- c('ID','error','type')
+errors.2_dataframe <- bind_rows(errors.2.in_dataframe,errors.2.out_dataframe) 
+errors.2_dataframe <- arrange(errors.2_dataframe, ID)
+ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type)) + 
+  geom_point() + geom_boxplot(alpha = 0.5)
+```
+
+
+## Regression tree - Charges
+
+We now examine the behaviour of the non normalized variable, "charges". First off again with the entire data values.
+
+```{r}
+tree.regression.charges <- tree(charges~., data=insurance)
+plot(tree.regression.charges)
+text(tree.regression.charges)
+summary(tree.regression.charges)
+```
+
+We receive a tree with four end nodes and two determining variables, as also the summary further demonstrates:
+
+```{r}
+summary(tree.regression.charges)
+```
+
+### Prediction
+
+```{r}
+tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")
+plot(tree.regression.charges.pred, insurance$charges)
+abline(0 ,1)
+```
+
+### Comparison Prediction <-> True Values
+
+```{r}
+error_regression.charges1 <- tree.regression.charges.pred-insurance$charges
+element_ID.regression.charges <- 1:length(error_regression.charges1)
+plot(element_ID.regression.charges, error_regression.charges1)
+title(main="Analysis of the residuals")
+abline(0 ,0, lwd=5,lty="dotted")
+abline(sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+abline(-sd(error_regression1) ,0, lwd=2, col="red", lty="dotted")
+```
+
+We clearly can furthermore clearly see that the variable is not distributed according to the normal distribution. 
+
+```{r}
+error_regression1_dataframe.charges <- tibble(element_ID.regression.charges, error_regression.charges1)
+ggplot(data=error_regression1_dataframe.charges) + geom_boxplot(aes(y=error_regression.charges1))
+hist(error_regression.charges1)
+RSS_charges <- sum((insurance[7]-tree.regression.charges.pred)^2)
+MSE_charges <- RSS_charges/length(tree.regression.charges.pred) #average of the squares of the errors = 33.45 --> overfit? (in the data, durchschnitt = 30.xx)
+deviation_charges <- sqrt(MSE_charges)
+```
+
+
+## Train-Test-Approach
+
+Again, we use the train-test approach to demonstrate the importance to not use all the data to train one's modell.
+
+```{r}
+ratio <- 0.7
+total <- nrow(insurance)
+train.charges <- sample(1:total, as.integer(total * ratio))
+tree.regression.charges2 <- tree(charges~., insurance, subset=train)
+plot(tree.regression.charges2)
+text(tree.regression.charges2, pretty=12, cex=0.75)
+```
+
+It is already apparent that for the test approach, the illustration for the tree looks completely different. Whereas there were four nodes before, we now have eight terminal nodes. In terms of variables used for three construction, nothing changed.
+
+```{r}
+summary(tree.regression.charges2)
+##partition.tree(tree.regression.charges2)
+```
+
+
+### Errors
+```{r}
+tree.regression.bmi.pred2 <- predict(tree.regression.bmi2, insurance[-train,], type="vector")
+RSS_bmi2_asabove <- sum((insurance[train,][3]-tree.regression.bmi.pred2)^2)
+RSS.bmi2_u_in <- mean(((insurance[train,][3]-predict(tree.regression.bmi2, insurance[train,], type="vector"))^2)$bmi)
+RSS.2_u <- mean(((insurance[-train,][3]-tree.regression.bmi.pred2)^2)$bmi)
+```
+
+
+
+
+
+
+
+# Support Vector Machines -> Carole
+
+In this chapter, Support Vector Machines are applied to the insurance dataset. 
+
+## two classes linear
+
+By visual exploration, we discover that smokers and non-smokers form two groups. We fit an SVM for those two groups. The lines in the graph are the first guess of how the data could be divided.
+
+```{r}
+# guess of hyperplane
+slope <- 0.001
+intercept <- 10
+ggplot(data = insurance) +
+  geom_point(aes(x = charges, y = bmi, color=smoker))+
+  geom_abline(slope = slope, intercept = intercept)
+```
+
+
+A linear SVM is tuned using different cost ranges. 
+
+```{r}
+set.seed(5)
+#get optimal cost 
+cost_range <-
+  c(1e-10,
+    1e-7,
+    1e-5,
+    0.001,
+    0.0025,
+    0.005,
+    0.0075,
+    0.01,
+    0.1,
+    1,
+    5,
+    10,
+    100, 
+    200)
+tune.out.1 <- tune(
+  svm,
+  smoker ~ charges+bmi,
+  data = insurance.train,
+  kernel = "linear",
+  ranges = list(cost = cost_range)
+)
+```
+
+The following is the best model. A cost of 5 is used. There are 104 support vectors.
+
+```{r}
+#best model 
+bestmod <- tune.out.1$best.model
+summary(bestmod)
+plot(bestmod, insurance.train, bmi~charges)
+```
+
+The confision matrices and the classifiaction error rate for train and test data are:
+
+```{r}
+# confusion matrix train
+confusion.lin.train <- table(predict = predict(bestmod, insurance.train),
+      truth = insurance.train$smoker)
+confusion.lin.train
+#classification error rate train
+(confusion.lin.train[1,2]+confusion.lin.train[2,1])/sum(confusion.lin.train[1:2,1:2])
+```
+
+```{r}
+# confusion matrix linear test
+confusion.lin.test <- table(predict = predict(bestmod, insurance.test),
+      truth = insurance.test$smoker)
+confusion.lin.test
+#classification error rate test
+(confusion.lin.test[1,2]+confusion.lin.test[2,1])/sum(confusion.lin.test[1:2,1:2])
+```
+
+## two classes polynomial
+
+A polynomial model was also tested but the classification error rate was slightly higher: 
+
+```{r}
+set.seed(5)
+#get optimal cost and degree for polynomial
+cost_range <-
+  c(1e-10,
+    1e-7,
+    1e-5,
+    0.001,
+    0.0025,
+    0.005,
+    0.0075,
+    0.01,
+    0.1,
+    1,
+    5,
+    10,
+    100)
+degree_range <- 2:4
+tune.out.poly <- tune(
+  svm,
+  smoker ~ charges+bmi,
+  data = insurance.train,
+  kernel = "polynomial",
+  ranges = list(cost = cost_range, degree = degree_range))
+#best model poly
+tune.out.poly$best.parameters
+bestmod.poly <- tune.out.poly$best.model
+summary(bestmod.poly)
+plot(bestmod.poly, insurance.train, bmi~charges)
+# confusion matrix 
+confusion.poly.train <- table(predict = predict(bestmod.poly, insurance.train),
+      truth = insurance.train$smoker)
+confusion.poly.test <- table(predict = predict(bestmod.poly, insurance.test),
+      truth = insurance.test$smoker)
+#classification error rate 
+(confusion.poly.train[1,2]+confusion.poly.train[2,1])/sum(confusion.poly.train[1:2,1:2])
+(confusion.poly.test[1,2]+confusion.poly.test[2,1])/sum(confusion.poly.test[1:2,1:2])
+```
+
+
+# Neural Networks
+## Neural Networks using "neuralnet"  
+
+In this section we will create and train a neural network which should be able to classify if a person is a smoker (output) based on the information of age, bmi and charges that are provided as input factors for the model. The assumption of the input variables is retrieved from our analysis already done in section 5. Generalized Linear Models.  
+
+### Cleaning and Normalization  
+This part will be needed to ensure a cleansed and normalized database for a proper modeling of neural networks.
+```{r}
+insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
+str(insurance)
+# smoker = 1 / nonsmoker = 2
+insurance$smoker <- as.character(insurance$smoker)
+insurance$smoker[insurance$smoker == "yes"] <- "1"
+insurance$smoker[insurance$smoker == "no"] <- "2"
+insurance$smoker <- as.factor(insurance$smoker)
+# female = 1 / male = 0
+insurance$sex <- as.character(insurance$sex)
+insurance$sex[insurance$sex == "female"] <- "1"
+insurance$sex[insurance$sex == "male"] <- "0"
+insurance$sex <- as.factor(insurance$sex)
+# region / SE = 1 / SW = 0 / NE = 2 / NW = 3
+insurance$region <- as.character(insurance$region)
+insurance$region[insurance$region == "southwest"] <- "1"
+insurance$region[insurance$region == "southeast"] <- "0"
+insurance$region[insurance$region == "northeast"] <- "2"
+insurance$region[insurance$region == "northwest"] <- "3"
+insurance$region <- as.factor(insurance$region)
+head(insurance)
+
+options(scipen = 99) # penalty for displaying scientific notation
+options(digits = 4) # suggested number of digits to display
+
+data <-select(insurance, smoker, charges, age, bmi)
+
+data$charges <- (data$charges - min(data$charges))/(max(data$charges) - min(data$charges)) # Min-Max Normalization
+data$age <- (data$age - min(data$age))/(max(data$age) - min(data$age)) # Min-Max Normalization
+data$bmi <- (data$bmi - min(data$bmi))/(max(data$bmi)-min(data$bmi)) # Min-Max Normalization
+```
+### Partition into training and test subsets  
+
+As shown above we already cleansed and normalized data. Now we will create two subsets of the insurance data set. Therefore we will execute a partition, so we will have a training set covering 70% of the original dataset while the test set will cover the remaining 30%.
+
+```{r}
+set.seed(222)
+ind <- sample(2, nrow(data), replace = TRUE, prob = c(0.7, 0.3))
+training <- data[ind==1,]
+testing <- data[ind==2,]
+par(mfrow = c(1, 1))
+plot(training)
+plot(testing)
+```
+
+### Creation and Training of the Neural Network 
+
+#### Not deep NN - one single hidden layer  
+
+##### Creation of NN_1  
+
+```{r}
+set.seed(444)
+nn <- neuralnet(smoker~charges + age + bmi,
+               data = training,
+               hidden = 1,
+               err.fct = "ce",
+               linear.output = FALSE)
+#summary(nn)               
+#print(nn)
+plot(nn, rep='best')
+```
+##### Prediction on training subset  
+
+```{r}
+prediction_nn <- predict(nn,training) 
+#prediction_nn
+class_nn <- apply(prediction_nn, 1, which.max)
+```
+
+##### Confusion Matrix for training  
+
+```{r}
+table(training$smoker, class_nn)
+#training$smoker[1]
+#class_nn[1]
+```
+
+##### Performance for training  
+
+```{r}
+levels(training$smoker)[class_nn[1]]
+corrects=sum(levels(training$smoker)[class_nn]==training$smoker)
+errors=sum(levels(training$smoker)[class_nn]!=training$smoker)
+(perf.nn=corrects/(corrects+errors))
+print(paste('training accuracy: ',perf.nn*100,"%"))
+```
+
+##### Prediction on test subset  
+
+```{r}
+prediction_nn <- predict(nn,testing) 
+#prediction_nn
+class_nn <- apply(prediction_nn, 1, which.max)
+```
+
+##### Confusion Matrix for testing  
+
+```{r}
+table(testing$smoker, class_nn)
+#training$smoker[1]
+#class_nn[1]
+```
+
+##### Performance for testing  
+
+```{r}
+levels(testing$smoker)[class_nn[1]]
+corrects=sum(levels(testing$smoker)[class_nn]==testing$smoker)
+errors=sum(levels(testing$smoker)[class_nn]!=testing$smoker)
+(perf.nn=corrects/(corrects+errors))
+print(paste('testing accuracy: ',perf.nn*100,"%"))
+```
+
+#### Deep NN - two hidden layers  
+
+##### Creation of NN_2  
+
+```{r}
+set.seed(444)
+nn2 <- neuralnet(smoker~charges + age + bmi,
+               data = training,
+               hidden = c(7,7),
+               threshold = 0.0025,
+               lifesign = 'full', 
+               lifesign.step = 500,
+               linear.output = FALSE)
+#summary(nn)               
+#print(nn)
+plot(nn2, rep='best')
+```
+##### Prediction on training subset  
+
+```{r}
+prediction_nn2 <- predict(nn2,training) 
+#prediction_nn
+class_nn <- apply(prediction_nn2, 1, which.max)
+```
+
+##### Confusion Matrix for training  
+
+```{r}
+table(training$smoker, class_nn)
+#training$smoker[1]
+#class_nn[1]
+```
+
+##### Performance for   
+
+```{r}
+levels(training$smoker)[class_nn[1]]
+corrects=sum(levels(training$smoker)[class_nn]==training$smoker)
+errors=sum(levels(training$smoker)[class_nn]!=training$smoker)
+(perf.nn=corrects/(corrects+errors))
+print(paste('training accuracy: ',perf.nn*100,"%"))
+```
+
+##### Prediction on test subset  
+
+```{r}
+prediction_nn2 <- predict(nn2,testing) 
+#prediction_nn
+class_nn <- apply(prediction_nn2, 1, which.max)
+```
+
+##### Confusion Matrix for testing  
+
+```{r}
+table(testing$smoker, class_nn)
+#training$smoker[1]
+#class_nn[1]
+```
+
+##### Performance for testing  
+
+```{r}
+levels(testing$smoker)[class_nn[1]]
+corrects=sum(levels(testing$smoker)[class_nn]==testing$smoker)
+errors=sum(levels(testing$smoker)[class_nn]!=testing$smoker)
+(perf.nn=corrects/(corrects+errors))
+print(paste('testing accuracy: ',perf.nn*100,"%"))
+```
+
+#### Deep NN - three hidden layers
+
+##### Creation of NN_3
+
+```{r}
+set.seed(444)
+nn3 <- neuralnet(smoker~charges + age + bmi,
+               data = training,
+               hidden = c(3,2,1),
+               threshold = 0.0025,
+               lifesign = 'full', 
+               lifesign.step = 500,
+               linear.output = FALSE)
+#summary(nn)               
+#print(nn)
+plot(nn3, rep='best')
+```
+##### Prediction on training subset
+
+```{r}
+prediction_nn3 <- predict(nn3,training) 
+#prediction_nn
+class_nn <- apply(prediction_nn3, 1, which.max)
+```
+
+##### Confusion Matrix for training
+
+```{r}
+table(training$smoker, class_nn)
+#training$smoker[1]
+#class_nn[1]
+```
+
+##### Performance for training
+
+```{r}
+levels(training$smoker)[class_nn[1]]
+corrects=sum(levels(training$smoker)[class_nn]==training$smoker)
+errors=sum(levels(training$smoker)[class_nn]!=training$smoker)
+(perf.nn=corrects/(corrects+errors))
+print(paste('training accuracy: ',perf.nn*100,"%"))
+```
+
+##### Prediction on test subset
+
+```{r}
+prediction_nn3 <- predict(nn3,testing) 
+#prediction_nn
+class_nn <- apply(prediction_nn3, 1, which.max)
+```
+
+##### Confusion Matrix for testing
+
+```{r}
+table(testing$smoker, class_nn)
+#training$smoker[1]
+#class_nn[1]
+```
+
+##### Performance for testing
+
+```{r}
+levels(testing$smoker)[class_nn[1]]
+corrects=sum(levels(testing$smoker)[class_nn]==testing$smoker)
+errors=sum(levels(testing$smoker)[class_nn]!=testing$smoker)
+(perf.nn=corrects/(corrects+errors))
+print(paste('testing accuracy: ',perf.nn*100,"%"))
+```
+
+
+## Neural Networks using "h20"
+
+### Creation NN 
+
+```{r}
+set.seed(99)
+h2o.init()
+train_hf <- as.h2o(training)
+model_dl <- h2o.deeplearning(x = 2:4, y = 1, training_frame = train_hf, nfolds = 10, seed=545, verbose = TRUE)
+```
+### Prediction on training
+
+```{r}
+predicted_h20_deep_neural_network_probabilites_train <- h2o.predict(model_dl, train_hf)
+table( as.data.frame(predicted_h20_deep_neural_network_probabilites_train$predict))
+predicted_h20_deep_neural_network_class_train <- as.data.frame(predicted_h20_deep_neural_network_probabilites_train$predict)
+```
+
+### Performance on training
+
+```{r}
+table(training$smoker, as.integer(predicted_h20_deep_neural_network_class_train[,1]))
+predicted_h20_deep_neural_network_performance_train <- mean(as.integer(predicted_h20_deep_neural_network_class_train[,1]) == (training$smoker))*100
+print(paste('training accuracy: ',predicted_h20_deep_neural_network_performance_train,"%"))
+```
+
+### Prediction on testing
+
+```{r}
+test_hf <- as.h2o(testing)
+predicted_h20_deep_neural_network_probabilites_test <- h2o.predict(model_dl, test_hf)
+table( as.data.frame(predicted_h20_deep_neural_network_probabilites_test$predict))
+predicted_h20_deep_neural_network_class_test <- as.data.frame(predicted_h20_deep_neural_network_probabilites_test$predict)
+```
+
+### Performance on testing
+
+```{r}
+table(testing$smoker, as.integer(predicted_h20_deep_neural_network_class_test[,1]))
+predicted_h20_deep_neural_network_performance_test <- mean(as.integer(predicted_h20_deep_neural_network_class_test[,1]) == (testing$smoker))*100
+print(paste('testing accuracy: ',predicted_h20_deep_neural_network_performance_test,"%"))
+```
+
+## Results and method comparison 
+
+Neural Network          | Training Performance      | Testing Performance
+--------------------    | ---------------------     | ---------------------
+NN                      | 97.11 %                   | 96.28 %
+NN2                     | 97.97 %                   | 96.28 %
+NN3                     | 97.75 %                   | 97.52 %
+h2o                     | 96.68 %                   | 96.52 %
+
+In the above table you can see the last results for all created models which are nearly the same.
+Based on the sample results, there is no huge difference between using the neuralnet package or the h2o package.
+Moreover the parameters for the hidden layer were chosen by a trial and error approach. We tried to create different levels for the hidden parameter, to explore if the performance will increase with the given complexity.
+Since the results are not reflecting this assumption and all performance results are in the same range, all models can be used for an adequate classification, whether a person is a smoker or not.
+
+
+
+
+# Cross validation and discussion

@@ -767,13 +767,13 @@ plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
-By working with the test data, we already can see at this point a change, meaning the overfit of working with our entire dataset. Were there previously six end nodes, we now have only three, with variables region (1: southwest, 2: northeast, 3: northwest) as well as age.
+By working with the test data, we already can see at this point a change, meaning the overfit of working with our entire dataset. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
 
 ```{r}
 summary(tree.regression.bmi2)
 ```
 
-Our residual mean deviance has now gone from 29.23 to 33.
+Our residual mean deviance has now gone from 29.23 to 27.84.
 
 
 #### Error Analysis
@@ -814,7 +814,7 @@ We receive a tree with seven end nodes and four influencing variables, as also t
 summary(tree.regression.charges)
 ```
 
-Our residual mean deviane (R-squared-error) us at 0.1592. Note that this value is also log transformed just like the other numbers regarding distribution.
+Our residual mean deviance (R-squared-error) us at 0.1592. Note that this value is also log transformed just like the other numbers regarding distribution.
 
 
 #### Prediction
@@ -847,8 +847,15 @@ error_regression1_dataframe.charges <- tibble(element_ID.regression.charges, err
 ggplot(data=error_regression1_dataframe.charges) + geom_boxplot(aes(y=error_regression.charges1))
 ```
 
+The boxplot clearly shows that there are more outliers in the negative area of the y-axis.
+
 ```{r}
 hist(error_regression.charges1)
+```
+
+Here goes further to show that the data points are slightly skewed.
+
+```{r}
 RSS_charges <- sum((insurance[7]-tree.regression.charges.pred)^2)
 MSE_charges <- RSS_charges/length(tree.regression.charges.pred) 
 deviation_charges <- sqrt(MSE_charges)
@@ -857,6 +864,8 @@ cat(RSS_charges)
 cat("\n")
 cat(deviation_charges)
 ```
+
+RSS here is at 211.86, the deviation at 0.4.
 
 
 #### Train-Test-Approach
@@ -877,6 +886,9 @@ We now receive a tree with exactly the same number of nodes but where the criter
 ```{r}
 summary(tree.regression.charges2)
 ```
+
+Our residual mean deivane is now a bit lower at 0.1475 (previously: 0.1592)
+
 
 
 #### Errors
@@ -906,19 +918,33 @@ tree.classification.region <- tree(region~., data=insurance)
 summary(tree.classification.region)
 ```
 
-We here see that the error rate is about 66%.
+We here receive a classification tree with four end nodes. Furthermore our RMS is at 2.604 and the misclassification rate is at at 65.47%.
 
 ```{r}
-plot(tree.classification.region)
-text(tree.classification.region, pretty=1, cex=0.75)
+plot(tree.classification.region_all)
+text(tree.classification.region_all, pretty=1, cex=0.75)
 ```
+
+It appears that the high misclassication rate is partly due to only 2 of the 4 factors being applied in the classification tree. We thus go into testing mode:
+
+```{r}
+tree.classification.region <- tree(region~., data=insurance, subset=train)
+plot(tree.classification.region)
+text(tree.classification.region)
+```
+
+Working with our training set, we see a clear change: we now have five terminal nodes as well as the factor of "northeast" that is not part of the equation
+
 
 ```{r}
 tree.classification.region.pred <- predict(tree.classification.region, insurance[train,], type="class")
+
 ```
 
 
 ### Classification Rate / Confusion Table
+
+We now examine the classification error on the train data.
 
 ```{r}
 tree.classification.region.pred.ct <- table(tree.classification.region.pred, insurance[train,]$region)
@@ -940,12 +966,19 @@ cat("\n")
 cat(tree.classification.region.pred.error)
 ```
 
-### Test Data
+Our "new" tree manages to reduce our classification error by about 1% for the train data.
+
+
+
+### Confusion Table Test Data
+
 
 ```{r}
 tree.classification.region.pred.test <- predict(tree.classification.region, insurance[-train,], type="class")
 
 ```
+
+We now determine the classification error on our test data:
 
 ```{r}
 (tree.classification.region.pred.test.ct <- table(tree.classification.region.pred.test, insurance[-train,]$region))
@@ -964,9 +997,9 @@ for (i1 in 1:3) {
 (tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate) 
 ```
 
+Whereas the model performed a bit better with the train data in comparison with the entire data set, the model now clearly performs in an all time bad.
 
-
-
+It seems that region, considering the constant high error quote for entire data set, train set as well as test set, is not a variable that has a large connection with the other variables used. 
 
 
 
@@ -1009,7 +1042,7 @@ summary(tree.regression.bmi.pruned2)
 
 
 
-### Pruning the factorial variable regions
+### Pruning regions
 
 ```{r}
 tree.classification.region.pruning <- cv.tree(tree.classification.region, FUN = prune.misclass)

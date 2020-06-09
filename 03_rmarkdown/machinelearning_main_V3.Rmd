@@ -44,7 +44,7 @@ library(mgcv)
 
 ```{r}
 #getwd()
-setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
+#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
 # smoker = 1 / nonsmoker = 0

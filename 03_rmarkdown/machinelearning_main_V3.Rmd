@@ -707,8 +707,8 @@ plot(tree.regression.bmi)
 text(tree.regression.bmi)
 ```
 
-We here receive a tree with six terminal nodes. Thanks to the tree-function, the tree is created by recursive binary splitting.
-The variables (internal nodes) determining the BMI, "charges" have been applied as well as if one smokes and from which region one comes. This can also be seen in below summary:
+We here receive a tree with six terminal nodes. Thanks to the tree-function, the tree is already created by recursive binary splitting.
+As the variables (internal nodes) determining the BMI, "charges" have been applied as well as if one smokes and from which region one comes. This can also be seen in below summary:
 
 ```{r}
 summary(tree.regression.bmi)
@@ -942,7 +942,7 @@ There are a few differences, especially in regard of the outliers between the te
 
 ## Classification Trees
 
-We here examine a decision tree for a non continuous variable. 
+We here examine a decision tree for a non continuous (hence categorical) variable. 
 ```{r}
 tree.classification.region_all <- tree(region~., data=insurance)
 summary(tree.classification.region_all)
@@ -1027,7 +1027,7 @@ for (i1 in 1:3) {
 (tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate) 
 ```
 
-Whereas the model performed a bit better with the train data in comparison with the entire data set, the model now clearly performs in an all time bad. The train modell is thus a clear overfit.
+Whereas the model performed a bit better with the train data in comparison with the entire data set, the model now clearly performs in an all time bad. The training modell is thus a clear overfit.
 
 It seems that region, considering the constant high error quote for entire data set, train set as well as test set, is not a variable that has a large connection with the other variables used. 
 
@@ -1089,6 +1089,8 @@ plot(tree.classification.region.pruning$k, tree.classification.region.pruning$de
 par(mfrow=c(1,1))
 ```
 
+Thanks to the prune.misclass function, we do not have to worry about cost complexity pruning ourselves but can simply apply the function as can be seen below:
+
 ```{r}
 prune.tree.classification.region <- prune.misclass(tree.classification.region, best=3) 
 
@@ -1096,6 +1098,7 @@ summary (prune.tree.classification.region)
 plot(prune.tree.classification.region)
 text(prune.tree.classification.region,pretty=0)
 ```
+
 
 
 ```{r}

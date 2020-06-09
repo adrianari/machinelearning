@@ -684,8 +684,10 @@ We thus normalize "charges" by logarithming it.
 (Attention: Please do only execute the code block (convertion to log) below once as executing it several times will apply the logarithmic function several times)
 
 ```{r}
-insurance$charges <- log(insurance$charges)
+insurance$charges <- log(insurance$charges) 
 ```
+
+Please note that hence, all charges values for this chaptre will strictly be indicated in log-value and not the true one.
 
 ```{r}
 hist(insurance$charges)
@@ -705,7 +707,8 @@ plot(tree.regression.bmi)
 text(tree.regression.bmi)
 ```
 
-We here receive a tree with six terminal nodes. For variables to determine the BMI, "charges" have been applied as well as if one smokes and from which region one comes. This can also be seen in below summary:
+We here receive a tree with six terminal nodes. Thanks to the tree-function, the tree is created by recursive binary splitting.
+The variables (internal nodes) determining the BMI, "charges" have been applied as well as if one smokes and from which region one comes. This can also be seen in below summary:
 
 ```{r}
 summary(tree.regression.bmi)
@@ -1024,7 +1027,7 @@ for (i1 in 1:3) {
 (tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate) 
 ```
 
-Whereas the model performed a bit better with the train data in comparison with the entire data set, the model now clearly performs in an all time bad.
+Whereas the model performed a bit better with the train data in comparison with the entire data set, the model now clearly performs in an all time bad. The train modell is thus a clear overfit.
 
 It seems that region, considering the constant high error quote for entire data set, train set as well as test set, is not a variable that has a large connection with the other variables used. 
 
@@ -1044,6 +1047,7 @@ We here see that the tree with seven end nodes has the smallest cross-validation
 tree.regression.bmi.pruning
 ```
 
+What is intersting to see is that with a tree size of seven, the error rate slight rises but then falls again for a tree with 4 end nodes just to then dramatically rise again.
 
 
 ```{r}

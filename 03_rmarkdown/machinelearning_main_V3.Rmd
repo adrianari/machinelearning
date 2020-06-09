@@ -935,8 +935,8 @@ There are a few differences, especially in regard of the outliers between the te
 
 We here examine a decision tree for a non continuous variable. 
 ```{r}
-tree.classification.region <- tree(region~., data=insurance)
-summary(tree.classification.region)
+tree.classification.region_all <- tree(region~., data=insurance)
+summary(tree.classification.region_all)
 ```
 
 We here receive a classification tree with four end nodes. Furthermore our RMS is at 2.604 and the misclassification rate is at at 65.47%.

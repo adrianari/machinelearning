@@ -767,6 +767,8 @@ So the average estimation of a BMI is about 5.39 BMI points away from the true v
 
 We now switch to the train-test approach.
 
+#### Train <-> Test Approach
+
 
 ```{r}
 ratio <- 0.7
@@ -777,7 +779,7 @@ plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
-By working with the test data, we already can see at this point a change, meaning the overfit of working with our entire dataset. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
+By working with the test data, we already can see at this point a change, meaning a possible overfit of working with our entire dataset. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
 
 ```{r}
 summary(tree.regression.bmi2)
@@ -794,7 +796,7 @@ tree.regression.bmi2.pred <- predict(tree.regression.bmi2, insurance[-train,], t
 (RSS.2.test <- mean(((insurance[-train,][3]-tree.regression.bmi2.pred)^2)$bmi))
 ```
 
-Interesstingly, we receive a RSS for the train dataset of 30.23 whereas for the test set, the RSS is 28.17. 
+We receive a RSS for the train dataset of 27.21 whereas for the test set, the RSS is 34.55. We seem to have an overfit of the model to the train data as the error rate for the test set is considerable higher than the true error (29.23)
 
 
 ```{r}
@@ -1075,6 +1077,8 @@ summary(tree.regression.bmi.pruned2)
 
 ### Pruning regions
 
+We now prune our classification tree, meaning the tree with the categorical variable.
+
 ```{r}
 tree.classification.region.pruning <- cv.tree(tree.classification.region, FUN = prune.misclass)
 summary(tree.classification.region.pruning)
@@ -1089,7 +1093,7 @@ plot(tree.classification.region.pruning$k, tree.classification.region.pruning$de
 par(mfrow=c(1,1))
 ```
 
-Thanks to the prune.misclass function, we do not have to worry about cost complexity pruning ourselves but can simply apply the function as can be seen below:
+
 
 ```{r}
 prune.tree.classification.region <- prune.misclass(tree.classification.region, best=3) 

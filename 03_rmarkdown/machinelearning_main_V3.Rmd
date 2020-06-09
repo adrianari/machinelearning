@@ -1239,39 +1239,48 @@ boost.insurance=gbm(charges~.,data=insurance[train,],
 summary(boost.insurance)
 ```
 
-partial dependence plots for most important factors
+We now show partial dependence the for most important factors:
+
 ```{r}
 plot(boost.insurance ,i="bmi")
 plot(boost.insurance ,i="smoker") 
 ```
 
 
-boosted model to predict charges on the test set. Report the MSE.
+We now do a prediction with the booted model.
+
 ```{r}
 yhat.boost=predict(boost.insurance, newdata=insurance[-train,], n.trees=5000)
 mean((yhat.boost -insurance.test[,"charges"])^2)
 ```
 
-resetting shrinkage parameter
+The output is our MSE = 0.2383602.
+
+We now are resetting shrinkage /lambda parameter which expresses basically that we have an overfit effect faster:
+
 ```{r}
 boost.insurance = gbm(charges~.,data=insurance[train,],distribution="gaussian",n.trees=5000, interaction.depth=4,shrinkage = 0.02, verbose = FALSE)
 yhat.boost2=predict(boost.insurance,newdata=insurance[-train,], n.trees=5000)
 mean((yhat.boost2 -insurance.test[,"charges"])^2)
 ```
 
-again resetting
+We now receive a smaller error rate, so one could say this is a better model.
+
+And we do the same thing again but on the other side:
 ```{r}
 boost.insurance2=gbm(charges~.,data=insurance[train,],distribution="gaussian",n.trees=5000, interaction.depth=4,shrinkage = 0.2, verbose = FALSE)
 yhat.boost3=predict(boost.insurance2,newdata=insurance[-train,], n.trees=5000)
 mean((yhat.boost -insurance.test[,"charges"])^2)
 ```
-higher test MSE is going to be the worst model --> overfitting effect
+We now have a higher test MSE which means this model is worse as overfitting has already started.
 
 
 (Attention: Please do only execute the code block (applying the exponential function) below once as executing it several times will apply the function several times)
 ```{r}
 insurance$charges <- exp(insurance$charges) #resetting the insurance variable 
 ```
+
+
 
 
 

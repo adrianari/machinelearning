@@ -1097,12 +1097,15 @@ Unsurprisingly, the error for the pruned tree (30.42) is still higher because wi
 ### Pruning regions
 
 We now prune our classification tree, meaning the tree with the categorical variable.
+By setting FUN to prune.misclass, we communicate that this decision tree will be handling a continous variable.
 
 ```{r}
 tree.classification.region.pruning <- cv.tree(tree.classification.region, FUN = prune.misclass)
 summary(tree.classification.region.pruning)
 tree.classification.region.pruning
 ```
+
+We have a length of four whereas the size of four is the optimal size.
 
 
 ```{r}
@@ -1112,7 +1115,9 @@ plot(tree.classification.region.pruning$k, tree.classification.region.pruning$de
 par(mfrow=c(1,1))
 ```
 
+For around 3 and 4, the line is flat whereas before it is very steep and afterwards grows a little bit as well. For deviane, we receive good values for it inbetween 0 to 10.
 
+We go with three for the further processing of pruning this decision tree, as it combines low values in both illustrations above, thus is good in terms of a low deviance.
 
 ```{r}
 prune.tree.classification.region <- prune.misclass(tree.classification.region, best=3) 
@@ -1121,17 +1126,18 @@ summary (prune.tree.classification.region)
 plot(prune.tree.classification.region)
 text(prune.tree.classification.region,pretty=0)
 ```
-
+The residual mean deviane is at 2.633 whereas the misclassification error is at 65.28%.
 
 
 ```{r}
-prune.tree.classification.region <- prune.misclass(tree.classification.region, best=5) 
-summary (prune.tree.classification.region)
-plot(prune.tree.classification.region)
-text(prune.tree.classification.region,pretty=0)
+prune.tree.classification.region2 <- prune.misclass(tree.classification.region, best=5) 
+summary (prune.tree.classification.region2)
+plot(prune.tree.classification.region2)
+text(prune.tree.classification.region2,pretty=0)
 
 ```
 
+The residual mean deviane is at 2.555 with a misclassification error rate of 0.6421.
 
 ```{r}
 prune.tree.classification.region.pred <- predict(prune.tree.classification.region,  insurance[-train,], type="class")

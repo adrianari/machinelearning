@@ -267,14 +267,14 @@ lm.region.0 <- lm(charges ~ 1 , data = insurance)
 coef(lm.region.0)
 anova(lm.region.0, lm.region.1)
 ```
-The anova test shows that there is a low evidence that the model with more parameters(in this case only the region) better fits the data. The F-value seems to be very small and also the p-value is not really significant with 0.03089. Anyhow there is a drop in the RSS, by adding 3 additional parameters of the different regions.
-To have a better understanding we can additionally perform posthoc contrasts to decide afterwards if we will drop the region finally from our model.
+The anova test shows low evidence that the model with more parameters(in this case only the region) fits better to the data. The F-value seems to be very small and also the p-value is not really significant with 0.03089. Anyhow there is a drop in the RSS, by adding 3 additional parameters of the different regions.
+To have a better understanding we can additionally perform posthoc contrasts to decide afterwards if we will drop region finally from our model.
 Before performing several posthoc test and repeating this exercise to all possible combinations we will use the ggplot to explore the data quickly upfront. 
 ```{r}
 ggplot(data=insurance,
        mapping = aes(y = charges, x= age))+ geom_point()+geom_smooth(method = 'lm') + facet_grid(. ~region)
 ```
-Using the visualization it seems that there seems to be no obvoius differnce and effect. Therfore we decide to drop also the variable region from our linear model.
+Using the visualization it seems that there seems to be no obvoius difference and effect. Therefore, we decide to drop also the variable region from our linear model.
 
 ### Dropping variables from the model  
 
@@ -284,7 +284,7 @@ lm.insurance.1 <- update(lm.insurance.all, .~. -region -sex)
 formula(lm.insurance.1)
 summary(lm.insurance.1)
 ```
-Comparing the summary output of lm.insurance.0 and lm.insurance.1 the latest model is only including variables having a p-value that indicates a significant factor.
+Comparing the summary output of lm.insurance.0 and lm.insurance.1, the latest model is only including variables with a p-value indicating a significant factor.
 
 ### Considering Interactions  
 
@@ -293,23 +293,23 @@ drop1(lm.insurance.1, test="F")
 lm.insurance.2 <- update(lm.insurance.1, .~. +age:bmi + age:children + age:smoker + bmi:children + bmi:smoker + children:smoker)
 summary(lm.insurance.2)
 ```
-As the above output shows not all of the added interactions have to be considered in the model. 
+As the above output shows, not all of the added interactions have to be considered in the model. 
 Upfront we also tried to generate a linear model including all possible interactions. Since the output was not satisfying we skiped this analysis at this point. 
-Therfore the working assumption in this step was quite easy by editing only possible and simple interactions. Based on the results we will now drop the unnecessary interactions.
+Therefore the working assumption in this step was quite easy by editing only possible and simple interactions. Based on the results we will now drop the unnecessary interactions.
 ```{r}
 drop1(lm.insurance.2, test="F")
 lm.insurance.3 <- update(lm.insurance.2, .~. -age:bmi - age:children - age:smoker - bmi:children -children:smoker)
 summary(lm.insurance.3)
 ```
 
-After considering also the interaction between bmi and smoker, which seems to be significant with a small p-value of 2e-16. The variable bmi itself has now a p-value of 0.82014. Therfore lets have a look on the relationship between bmi and smoker to have a better understanding:
+After considering also the interaction between bmi and smoker, which seems to be significant with a small p-value of 2e-16. The variable bmi itself has now a p-value of 0.82014. Therefore lets have a look on the relationship between bmi and smoker to have a better understanding:
 
 ```{r}
 ggplot(data=insurance,
        mapping = aes(y = charges, x= bmi))+ geom_point()+ geom_smooth(method = 'lm') +facet_grid(. ~ smoker)
 ```
 
-As expected there seems to be a clear relationship between charges and bmi, considering if a person is smoking or not. Since this relationship makes even sense from the domain perspective, we will definitly keep this in our model.
+As expected, there seems to be a clear relationship between charges and bmi, considering if a person is smoking or not. Since this relationship makes even sense from the domain perspective, we will definitly keep this in our model.
 
 
 ### Measure of Fit  

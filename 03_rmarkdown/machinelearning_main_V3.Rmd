@@ -677,6 +677,9 @@ hist(insurance$charges)
 
 One can see that BMI seems to be normally distributed whereas charges follows the pattern of a 1/x-function. 
 
+We thus normalize "charges" by logarithming it. 
+(Attention: Please do only execute the code block (convertion to log) below once as executing it several times will apply the logarithmic function several times)
+
 ```{r}
 insurance$charges <- log(insurance$charges)
 ```
@@ -1205,8 +1208,9 @@ mean((yhat.boost -insurance.test[,"charges"])^2)
 higher test MSE is going to be the worst model --> overfitting effect
 
 
+(Attention: Please do only execute the code block (applying the exponential function) below once as executing it several times will apply the function several times)
 ```{r}
-insurance$charges <- exp(insurance$charges) #resetting the insurance variable
+insurance$charges <- exp(insurance$charges) #resetting the insurance variable 
 ```
 
 

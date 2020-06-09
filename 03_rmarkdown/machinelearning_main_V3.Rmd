@@ -3,10 +3,10 @@ title: "Machine Learning I Group Work"
 author: "Adriana Ricklin, Yvonne Schaerli, Christina Sudermann, Carole Mattmann"
 date: "11 June 2020"
 output: 
-  html_document:
+  pdf_document:
     number_sections: yes
     toc: yes
-  pdf_document:
+  html_document:
     number_sections: yes
     toc: yes
 ---

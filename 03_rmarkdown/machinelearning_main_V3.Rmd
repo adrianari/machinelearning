@@ -44,7 +44,7 @@ library(mgcv)      # for GAM
 
 # Import and data cleaning
 
-The dataset "insurance" from https://www.kaggle.com/mirichoi0218/insurance is imported and transformed. The data contains information about 1338 people and their health care charges.
+The dataset "insurance" from https://www.kaggle.com/mirichoi0218/insurance is imported and transformed. The data contains information about 1338 people, their health care charges and further parameters such as age, number of children they have etc.
 
 ```{r}
 #getwd()
@@ -74,16 +74,16 @@ head(insurance)
 
 # Linear models
 
-The data set used for this project contains 1338 observations and seven variables containing the age, sex, bmi, children, smoker, region and charges. Those variables are covering continuous and categorical variables.The region as an categorical variable is covering four different levels.
+The data set used for this project contains 1338 observations and seven variables containing the age, sex, bmi, children, smoker, region and charges. Those variables are covering continuous and categorical variables. The region as an categorical variable is covering four different levels.
 
 ## Basic analysis of continuous variables
 
-Here we will begin with a graphical analysis. Therefore we will plot the response variable against the given predictors to gather first relationships, which can be used later in the modelling process.
+We will begin with a graphical analysis. We will plot the response variable against the given predictors to gather first relationships, which can be used later in the modelling process.
 ```{r}
 plot(charges ~ age, data =insurance, main = 'Charges against age')
 ```
 
-There seems to be a positive relationship between age and charges.
+There seems to be a positive relationship between age and charges as can be seen by the seemingly positive relationship between ages and charges.
 
 ```{r}
 plot(charges ~ bmi, data =insurance, main = 'Charges against bmi')
@@ -95,7 +95,7 @@ The above plot is not showing a clear relationship between bmi and the correspon
 plot(charges ~ children, data =insurance, main = 'Charges against children')
 ```
 
-There might be an affect between the number of children and the charges. As shown above it might be possible to interpret that with a rising number of children the charges a decreasing. Still this is not a clear relationship, more a wide interpretation of the plot.
+There might be an affect between the number of children and charges. As shown above, it might be possible to interpret that with a rising number of children the charges are decreasing. Still, this is not a clear relationship, more a wide interpretation of the plot.
 
 ## Basic analysis of categorical variables
 
@@ -103,23 +103,23 @@ There might be an affect between the number of children and the charges. As show
 plot(charges ~ sex, data =insurance, main = 'Charges against sex')
 ```
 
-As shown above there are some differences in the charges, comparing the boxplot for the two given genders. It seems that the range for 50% of the obersavation is bigger than the one for the female group. Also the 95% quantile is about 10'000 lower than the same quantile for the male group.
+As shown above there are some differences in the charges, comparing the boxplot for the two given genders, whereas 0 stands for male, 1 stands for female. It seems that the range for 50% of the male observations is bigger than the one for the female group, meaning the distribution for males is broader than the one for females. Also the 95% quantile is about 10'000 lower than the same quantile for the male group.
 
 ```{r}
 plot(charges ~ smoker, data =insurance, main = 'Charges against smoker')
 ```
 
-This plot is showing a clear affect of smoking on the charges. As you can see persons who are not smoking having mean charges that are three times less as the one of people who are smoking. even the outliers of the smokers are still in the range where only 50% of the smokers are located.
+This plot is showing a clear effect of smoking on the charges. As one can see, people who are not smoking (value = 0) have mean charges that are three times lower than the charges for smokers (value = 1). Even the outliers of the non-smokers are still within the range of the upper boxplot quartil of the smokers.
 
 ```{r}
 plot(charges ~ region, data =insurance, main = 'Charges against region')
 ```
 
-In this case there isn't any clear realtionship or trend visible between the region and the corresponding charges. Comparing the four regions together seems that there are slightly small diferences in the width of the box, distribution of 50% of the observation as well the setting of the 95% quantile. Those differences will be analysed later.
+In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small diferences between the width of the boxes, distribution of 50% of the observation as well the setting of the 95% quantile. Those differences will be analysed later.
 
 ## Basic analysis of categorical and continous variables  
 
-In this part we want to show exemplary how the relationship between charges and the age can be affected by adding additionally a categorical variable. This can be used for further data explorations and as well be adapted on all other variables. For this section we will just perform this enlargement for the case of the age to illustrate some possible relationships, which also can be helpful for the following modeling process.
+In this part we want to show exemplary how the relationship between charges and age can be affected by adding additionally a categorical variable. This can be used for further data explorations and can be adapted on all other variables. For this section, we will just perform this enlargement for the case of the age to illustrate some possible relationships, which also can be helpful for the following modeling process.
 ```{r}
 plot(charges ~ age, data = insurance,
      col = sex,
@@ -172,7 +172,7 @@ qplot(y=charges, x=age,
 
 ## Fitting a first Linear Model
 
-As usually we will start by fitting a simple regression model to the insurance dataset. Therfore we will start with one variable and add additonal complexity in each following subset. 
+As usually we will start by fitting a simple regression model to the insurance dataset. Therefore we will start with one variable and add additonal complexity in each following subset. 
 This step-by-step approach helps to explore the data slightly better and will simplify the final modelling.
 
 ### Linear Model with one variable
@@ -186,22 +186,22 @@ summary(lm.insurance)
 #### Coefficent and Interpretation  
 
 As shown in the R Output a person with the age of 0 will have a base charge of 3165.885. This intercept and its interpreation seems to be nonsensical.
-With each year the charges are increasing by 257.7226, which is the slope for this regressionline
+With each year the charges increase by 257.7226, which is the slope for this regressionline
 
 #### P-values  
 
-With a value of 2e-16 the age seesm to have a very strong effect on the charges. This means that the slope of the chages is not flat, not zero, so the hypothesisi has to be thrown away.
+With a value of 2e-16, age seems to have a very strong effect on charges. This means that the slope of the chages is not flat, not zero, so the hypothesis has to be thrown away.
 
 #### Including the gender as a second variable  
 
-In this subsest we will consider also the sex for modelling a simple regression model.
+In this subsest, we will consider also the sex for modelling a simple regression model.
 ```{r}
 lm.insurance.2 <- lm(charges ~ age + sex, data = insurance)
 summary(lm.insurance.2)
 ```
 #### Including interaction  
 
-Since a second variable was added we want to explore if there might be significant interaction between age and sex, that might have to be considered for the modeling process. 
+Since a second variable was added, we want to explore if there might be significant interactions between age and sex, that might have to be considered for the modeling process. 
 ```{r}
 lm.insurance.3 <-lm(charges ~ age * sex, data =insurance)
 summary(lm.insurance.3)
@@ -240,17 +240,17 @@ Afterwards we will then compare the fitted model with a base model and test its 
 lm.insurance.all <- lm(charges ~ age + sex + bmi + children + smoker + region , data = insurance)
 summary(lm.insurance.all)
 ```
-As the above R Output shows not all varaibles seems to have a significant effect on the charges.
+As the above R Output shows, not every variable seems to have a significant effect on the charges.
 
 #### Testing sex before dropping 
 
-Before removing those two variables we first will make a deeper analysis.
+Before we remove those two variables we first will make a deeper analysis.
 ```{r}
 lm.sex <- lm(charges ~ sex, data=insurance)
 summary(lm.sex)
 coef(lm.sex)
 ```
-As seen in the output considering only the sex it is not a significant and standalone explaining variable for the charges. Comparing the p-value of the sex within the full model including all possible variables it is so high with a value of 0.693348, that it can be dropped from our final model.
+As seen in the output considering only sex is not a significant and standalone explaining variable for charges. Comparing the p-value of sex within the full model, including all possible variables, it is so high with a value of 0.693348 it can be dropped from our final model.
 
 #### Testing region before dropping  
 

@@ -769,7 +769,6 @@ We now switch to the train-test approach.
 
 #### Train <-> Test Approach
 
-
 ```{r}
 ratio <- 0.7
 total <- nrow(insurance)
@@ -779,13 +778,13 @@ plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
-By working with the test data, we already can see at this point a change, meaning a possible overfit of working with our entire dataset. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
+By working with the test data, we  can see at this point a change, meaning a possible overfitt. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
 
 ```{r}
 summary(tree.regression.bmi2)
 ```
 
-Our residual mean deviance has now gone from 29.23 to 27.84.
+Our residual mean deviance has furthermore gone from 29.23 to 27.84.
 
 
 #### Error Analysis
@@ -796,7 +795,7 @@ tree.regression.bmi2.pred <- predict(tree.regression.bmi2, insurance[-train,], t
 (RSS.2.test <- mean(((insurance[-train,][3]-tree.regression.bmi2.pred)^2)$bmi))
 ```
 
-We receive a RSS for the train dataset of 27.21 whereas for the test set, the RSS is 34.55. We seem to have an overfit of the model to the train data as the error rate for the test set is considerable higher than the true error (29.23)
+We receive an RSS for the train dataset of 27.21 whereas for the test set, the RSS is 34.55. We seem to have an overfit.
 
 
 ```{r}

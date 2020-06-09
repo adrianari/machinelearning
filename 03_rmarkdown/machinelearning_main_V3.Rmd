@@ -36,12 +36,15 @@ library(bit64)     # for NN
 library(h2o)       # for NN
 library(ggplot2)
 library(tidyverse) # inclued ggplot2
+library(mgcv)
 ```
 
 
 # Import and data cleaning
 
 ```{r}
+#getwd()
+#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
 # smoker = 1 / nonsmoker = 0
@@ -1343,6 +1346,7 @@ In this section we will create and train a neural network which should be able t
 ### Cleaning and Normalization  
 This part will be needed to ensure a cleansed and normalized database for a proper modeling of neural networks.
 ```{r}
+#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
 # smoker = 1 / nonsmoker = 2
@@ -1367,7 +1371,7 @@ head(insurance)
 options(scipen = 99) # penalty for displaying scientific notation
 options(digits = 4) # suggested number of digits to display
 
-data <-select(insurance, smoker, charges, age, bmi)
+data <-dplyr::select(insurance, smoker, charges, age, bmi)
 
 data$charges <- (data$charges - min(data$charges))/(max(data$charges) - min(data$charges)) # Min-Max Normalization
 data$age <- (data$age - min(data$age))/(max(data$age) - min(data$age)) # Min-Max Normalization

@@ -1139,15 +1139,18 @@ text(prune.tree.classification.region2,pretty=0)
 
 The residual mean deviane is at 2.555 with a misclassification error rate of 0.6421.
 
+We now make a prediction on our test data:
+
 ```{r}
 prune.tree.classification.region.pred <- predict(prune.tree.classification.region,  insurance[-train,], type="class")
 
-prune.tree.classification.region.pred.ct <- table(prune.tree.classification.region.pred, insurance[-train,]$region)
-prune.tree.classification.region.pred.correct <- sum(prune.tree.classification.region.pred==insurance[-train,]$region)/sum(prune.tree.classification.region.pred.ct)
+(prune.tree.classification.region.pred.ct <- table(prune.tree.classification.region.pred, insurance[-train,]$region))
+(prune.tree.classification.region.pred.correct <- sum(prune.tree.classification.region.pred==insurance[-train,]$region)/sum(prune.tree.classification.region.pred.ct))
 
 prune.tree.classification.region.pred.testError <- 1 - prune.tree.classification.region.pred.correct
 ```
 
+As can be clearly seen, our rate to correctly classify the regions is still very low at 34.69%.
 
 ```{r}
 cat(tree.classification.region.pred.error) 
@@ -1155,8 +1158,11 @@ cat("\n")
 cat(prune.tree.classification.region.pred.testError)
 ```
 
+However, despite the classification rate still being very low, in comparison, the error has drastically reduced in comparison with the unpruned tree.
+
 
 ## Bagging
+
 
 ```{r}
 set.seed (5)
@@ -1164,22 +1170,35 @@ train = sample(1:nrow(insurance), nrow(insurance)/2)
 insurance.test=insurance[-train ,]
 ```
 
+
+We now are bagging our dataset. We furthermore say that we are happy with an estimation and not the real crossvalidation.
+
 ```{r}
-bag.insurance=bagging(charges~., data=insurance, subset=train, nbagg=40, coob = TRUE)
+bag.insurance=bagging(charges~., data=insurance, subset=train, nbagg=20, coob = TRUE)
 print(bag.insurance)
 #bag.insurance still needs to be squared at this point
 ```
+
+We here receive a root mean squared error of 0.391 --> root mean error = 0.152881.
+
+We now predict performance from our bagged model:
 
 ```{r}
 yhat.bag = predict(bag.insurance, newdata=insurance[-train,])
 plot(yhat.bag, insurance.test[,"charges"])
 abline(0,1, col="red")
 ```
+
+On the x-axis, we see the prediction, whereas on the y-axis, the real value (logarithmic).
+
+We also compute the mean: in comparison with the previously caluclated mean value, we can say they are rather related.
+
 ```{r}
 mean((yhat.bag-insurance.test[,"charges"])^2)
 ```
 
-We also test this
+We also test this with the random forest way to do it.
+
 ```{r}
 ## test with randomForest
 bag.insurance.2=randomForest(charges~., data=insurance, subset=train, mtry=6, importance =TRUE)
@@ -1192,6 +1211,8 @@ print(bag.insurance.2)
 importance(bag.insurance.2)
 varImpPlot(bag.insurance.2)
 ```
+
+We here see that age and if one smokes are of biggest influence on charges.
 
 
 ## Random Forests

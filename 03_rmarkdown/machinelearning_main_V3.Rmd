@@ -1202,7 +1202,7 @@ mean((yhat.boost2 -insurance.test[,"charges"])^2)
 again resetting
 ```{r}
 boost.insurance2=gbm(charges~.,data=insurance[train,],distribution="gaussian",n.trees=5000, interaction.depth=4,shrinkage = 0.2, verbose = FALSE)
-yhat.boost3=predict(boost.insurance3,newdata=insurance[-train,], n.trees=5000)
+yhat.boost3=predict(boost.insurance2,newdata=insurance[-train,], n.trees=5000)
 mean((yhat.boost -insurance.test[,"charges"])^2)
 ```
 higher test MSE is going to be the worst model --> overfitting effect

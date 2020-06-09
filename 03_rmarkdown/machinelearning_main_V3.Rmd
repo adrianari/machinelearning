@@ -44,7 +44,7 @@ library(mgcv)
 
 ```{r}
 #getwd()
-#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
+setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
 # smoker = 1 / nonsmoker = 0
@@ -748,7 +748,7 @@ error_regression1_dataframe <- tibble(element_ID.regression, error_regression1)
 ggplot(data=error_regression1_dataframe) + geom_boxplot(aes(y=error_regression1))
 ```
 
-A boxplot further demonstrates the rather normally distributed data. It is apparent for there to be more outliers in the negative y-axis area than the positive y-axis area. 
+A boxplot further demonstrates the rather normally distributed data with mean around 0. It is apparent for there to be more outliers in the negative y-axis area than the positive y-axis area. 
 
 ```{r}
 hist(error_regression1)
@@ -778,7 +778,7 @@ plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
 ```
 
-By working with the test data, we  can see at this point a change, meaning a possible overfitt. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
+By working with the test data, we  can see at this point a change, meaning a possible overfit. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
 
 ```{r}
 summary(tree.regression.bmi2)
@@ -795,7 +795,7 @@ tree.regression.bmi2.pred <- predict(tree.regression.bmi2, insurance[-train,], t
 (RSS.2.test <- mean(((insurance[-train,][3]-tree.regression.bmi2.pred)^2)$bmi))
 ```
 
-We receive an RSS for the train dataset of 27.21 whereas for the test set, the RSS is 34.55. We seem to have an overfit.
+We receive an RSS for the train dataset of 27.21 whereas for the test set, the RSS is 34.55. We seem to have an overfit as our model performs considerably worse for the test data than the train data.
 
 
 ```{r}
@@ -815,12 +815,12 @@ ggplot(data = errors.2_dataframe, mapping = aes(x = ID,y = error, color = type))
 ```
 
 
-Both dataframes show the about same distribution as can be seen in the boxplot. 
+Both dataframes show the about same boxplots in regard of the errors. Not surprisingly, the distribution of the test data is wider, considering that the model has been trained with 
 
 
 ### Regression tree - Charges
 
-We now examine the behaviour of the variable, "charges". First off again with the entire data values.
+We now examine the behaviour of the variable "charges". First off again with the entire data values.
 
 ```{r}
 summary(insurance$charges)
@@ -835,12 +835,12 @@ We receive a tree with seven end nodes and four influencing variables, as also t
 summary(tree.regression.charges)
 ```
 
-Our residual mean deviance (R-squared-error) us at 0.1592. Note that this value is also log transformed just like the other numbers regarding distribution.
+Our residual mean deviance (R-squared-error) us at 0.1592. Note that this value is also log transformed as the numbers on which it has been calculated are log transformed.
 
 
 #### Prediction
 
-We are now again prediction the data that has already been used for training the modell.
+We are now again predicting the data that has already been used for training the modell.
 
 ```{r}
 tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")
@@ -860,7 +860,7 @@ abline(sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
 abline(-sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
 ```
 
-We  can furthermore clearly see that the residuals are roughly normalized, with an approximate mean of 0.
+We  can furthermore clearly see that the residuals are roughly normalized, with an approximate mean of 0. Outliers are however more distributed in the negative axis of y than in the postiive.
 
 
 ```{r}
@@ -868,13 +868,14 @@ error_regression1_dataframe.charges <- tibble(element_ID.regression.charges, err
 ggplot(data=error_regression1_dataframe.charges) + geom_boxplot(aes(y=error_regression.charges1))
 ```
 
-The boxplot clearly shows that there are more outliers in the negative area of the y-axis.
+The above boxplot further demonstrates that there is a slight bias in the distribution.
+
 
 ```{r}
 hist(error_regression.charges1)
 ```
 
-Here goes to further show that the data points are slightly skewed.
+Here goes to further show that the data points are slightly skewed. However, mean of the residuals is still roughly at 1. 
 
 
 
@@ -910,7 +911,7 @@ We now receive a tree with exactly the same number of nodes but where the criter
 summary(tree.regression.charges2)
 ```
 
-Our residual mean deivane is now a bit lower at 0.1475 (previously: 0.1592)
+Our residual mean deviance is now a bit lower at 0.1475 (previously: 0.1592)
 
 
 ```{r}
@@ -919,6 +920,7 @@ tree.regression.charges2.pred <- predict(tree.regression.charges2, insurance[-tr
 (RSS.2.test.charges <- mean(((insurance[-train,][7]-tree.regression.charges2.pred)^2)$charges))
 ```
 
+However, our train data, despite still having the same number of terminal nodes, is biased and thus shows an overfit. Hence it is that RSS for the train set is at e^0.146418, whereas for the test set, we are at e^0.196484.
 
 
 #### Errors
@@ -941,6 +943,8 @@ ggplot(data = errors.2_dataframe.charges, mapping = aes(x = ID,y = error, color 
 There are a few differences, especially in regard of the outliers between the test and the train data. Roughly, one can say however that the boxplot is about the same for train and test. Also, the outliers in the negative area are for both data sets more spread.
 
 
+
+
 ## Classification Trees
 
 We here examine a decision tree for a non continuous (hence categorical) variable. 
@@ -949,7 +953,7 @@ tree.classification.region_all <- tree(region~., data=insurance)
 summary(tree.classification.region_all)
 ```
 
-We here receive a classification tree with four end nodes. Furthermore our RMS is at 2.604 and the misclassification rate is at at 65.47%.
+We here receive a classification tree with four end nodes. Furthermore our RMS is at 2.604 and the misclassification rate - which is basically the RSS for classification trees - is at at 65.47%.
 
 ```{r}
 plot(tree.classification.region_all)
@@ -964,7 +968,7 @@ plot(tree.classification.region)
 text(tree.classification.region)
 ```
 
-Working with our training set, we see a clear change: we now have five terminal nodes as well as the factor of "northeast" that is not part of the equation
+Working with our training set, we see a clear change: we now have five terminal nodes as well as the factor of "northeast" that is not part of the equation.
 
 
 ```{r}
@@ -975,7 +979,7 @@ tree.classification.region.pred <- predict(tree.classification.region, insurance
 
 ### Confusion Table for Train Data
 
-We now examine the classification error on the train data.
+We now examine the classification error on the train data by comparing the estimation with the true value to elaborate how exact our trained model works.
 
 ```{r}
 tree.classification.region.pred.ct <- table(tree.classification.region.pred, insurance[train,]$region)
@@ -1036,19 +1040,27 @@ It seems that region, considering the constant high error quote for entire data 
 
 ## Pruning
 
+We now continue to prune the trees as so far, we actually managed to create an overfit of our train data in comparison to our test data.
+
 ### Pruning the continous BMI variable
+
+We recall: the BMI showed a clear overfit when comparing the RSS of train <-> test data:
+train = 27.21
+test = 34.55
+
+
 ```{r}
 tree.regression.bmi.pruning = cv.tree(tree.regression.bmi2, FUN = prune.tree)
 plot(tree.regression.bmi.pruning, type = "b")
 ```
 
-We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'250. This is also further shown in below table.
+With cvtree, the crossvalidation is done automatically for one. We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'250. This is also further shown in below table. Four terminal end leaves is furthermore also very interesting as afterwards (up to 7), the changes are only small in comparison with the steep lines from 1 to 3.
 
 ```{r}
 tree.regression.bmi.pruning
 ```
 
-What is intersting to see is that with a tree size of seven, the error rate slight rises but then falls again for a tree with 4 end nodes just to then dramatically rise again.
+What is intersting to see is that between the number of end nodes 4 and 7, there is a slight growth as well as decline in terms of variance, so the slope inbetween is both negative as well as positive.
 
 
 ```{r}
@@ -1070,8 +1082,16 @@ summary(tree.regression.bmi.pruned)
 summary(tree.regression.bmi.pruned2)
 ```
 
+In comparison, we can say that the tree with four end nodes more or less performs the same good as the tree with six end nodes. Of course, for the tree with 6 leaves, the residual mean deviance is a bit lower than for four. In terms of internal nodes however, the construction of the tree is roughly the same - with, of course, the exception of the two additional splits for which is also used an additional variable in comparison, namely "age".
 
+```{r}
+(RSS.cv.bmi.test <- sum((insurance[train,][3]-predict(tree.regression.bmi.pruned, insurance[train,], type="vector"))^2)/nrow(insurance[train,]))
 
+tree.regression.bmi.pruned.pred <- predict(tree.regression.bmi.pruned, insurance[-train,], type="vector")
+(RSS.cv <- sum((insurance[-train,][3]-tree.regression.bmi.pruned.pred)^2)/length(tree.regression.bmi.pruned.pred))
+```
+
+Unsurprisingly, the error for the pruned tree (30.42) is still higher because with pruning, you basically have a fully grown tree and start cutting branches off that are not as necessary as others. Meaning pruning does not grant a perfect performance in an absolute sense.
 
 
 ### Pruning regions

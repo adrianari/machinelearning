@@ -1784,10 +1784,13 @@ The out of sample performance is computed by using 50:50 training and test data 
 
 ```{r}
 set.seed(7)
-r.squared.lm.insurance.3 <- c()
-r.squared.lm.insurance.all <- c()
-r.squared.tree.regression.charges <- c()
-r.squared.rf.insurance <- c()
+
+
+RMSE.1 <- c()
+RMSE.2 <- c()
+RMSE.3 <- c()
+RMSE.4 <- c()
+
 
 
 for(i in 1:100){
@@ -1832,20 +1835,10 @@ for(i in 1:100){
 
   #RMSE
   
-  RMSE.1 <- c()
-  RMSE.2 <- c()
-  RMSE.3 <- c()
-  RMSE.4 <- c()
-
   RMSE.1[i] <- RMSE(lm.insurance.3.predict, insurance.test$charges)
   RMSE.2[i] <- RMSE(lm.insurance.all.predict, insurance.test$charges)
-
-  RSS_charges <- sum((insurance$charges-tree.regression.charges.predict^2)
-  MSE_charges <- RSS_charges/length(tree.regression.charges.predict) 
-  deviation_charges <- sqrt(MSE_charges)
   
-  
-  }
+    }
 
 
 
@@ -1858,22 +1851,21 @@ The out of sample performance, using RMSE as measure is the following:
 ```{r}
 #lm.3 
 mean(RMSE.1)
-#lm.amm
-mean(r.squared.lm.insurance.all)
+#lm.all
+mean(RMSE.2)
 #tree regression
-mean(r.squared.tree.regression.charges)
+mean(RMSE.3)
 #random forest
-mean(r.squared.rf.insurance)
+mean(RMSE.4)
 ```
 
 ```{r}
 par(mfrow=c(1,4))
-boxplot(r.squared.lm.insurance.3, main="lm.3")
-boxplot(r.squared.lm.insurance.all, main="lm.all")
-boxplot(r.squared.tree.regression.charges, main="regression tree")
-boxplot(r.squared.rf.insurance, main="random forest")
+boxplot(RMSE.1, main="lm.3")
+boxplot(RMSE.2, main="lm.all")
+boxplot(RMSE.3, main="regression tree")
+boxplot(RMSE.4, main="random forest")
 ```
-
 
 
 

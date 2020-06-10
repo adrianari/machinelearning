@@ -378,7 +378,7 @@ Clearly visible is the increase in costs up to about 18'000 with increasing age.
 We add linearity to the model by adding a square term to charges.
 ```{r}
 # Model with a linear effect for charges
-lm.insurance.4 <- lm(age ~ sex + bmi + children + charges, data = insurance)
+lm.insurance.4 <- lm(age ~ sex + bmi + children + charges, data = insurance) 
 
 #Model with a quadratic effect for charges
 lm.insurance.5 <- update(lm.insurance.4, . ~ . + I(charges^2))
@@ -396,7 +396,8 @@ The graphical result is shown below.
 ```{r}
 gg.age.charges + 
   geom_smooth(method = "lm", 
-              formula = y ~ poly(x, degree = 2))
+              formula = y ~ poly(x, degree = 2)) + 
+              ggtitle("charges depending on age with quadratic term")
 ```
 
 
@@ -406,7 +407,7 @@ What is the result if you look at the men and women separately.
 ggplot(data = insurance,
          mapping = aes(y = charges,
                        x = sex)) +
-    geom_boxplot()
+    geom_boxplot() + ggtitle("charges depending on gender")
 ```
 
 This graph shows that there is not really a difference in the median between women and men. The only difference is in the middle 50% range where the men have a larger range.
@@ -417,7 +418,7 @@ ggplot(data = insurance,
                      x = charges)) +
   geom_point() +
   geom_smooth(se = FALSE) +
-  facet_wrap(. ~ sex)
+  facet_wrap(. ~ sex) + ggtitle("charges depending on gender")
 ```
 
 The rough course of costs as a function of age is comparable for men and women. A closer look at the result reveals slight differences. However, this is not a reason to differentiate the models according to gender.
@@ -434,7 +435,7 @@ gg.age.charges.part2 <- ggplot(data = insurance.part2,
                               mapping = aes (y = age,
                                              x = charges)) +
   geom_point()
-gg.age.charges.part2 + geom_smooth()
+gg.age.charges.part2 + geom_smooth() + ggtitle("over 18'000 charges depending on age")
 ```
 
 ```{r}

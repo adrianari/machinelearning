@@ -368,7 +368,7 @@ gg.age.charges <- ggplot(data = insurance,
                   mapping = aes (y = age,
                                  x = charges)) +
   geom_point()
-gg.age.charges + geom_smooth()
+gg.age.charges + geom_smooth() + ggtitle("charges depending on age")
 ```
 
 Clearly visible is the increase in costs up to about 18'000 with increasing age. The dependence of amount and costs above 10,000 is more difficult to predict due to the non-linearity.

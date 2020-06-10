@@ -1137,13 +1137,13 @@ We now predict performance from our bagged model:
 
 ```{r}
 yhat.bag <- predict(bag.insurance, newdata=insurance[-train,])
-plot(yhat.bag, insurance.test[,"charges"])
+plot(yhat.bag, insurance.test[,"charges"], main="Prediction against real data with test data")
 abline(0,1, col="red")
 ```
 
 On the x-axis, we see the prediction, whereas on the y-axis, the real value (logarithmic).
 
-We also compute the mean: in comparison with the previously caluclated mean value, we can say they are rather related.
+We also compute the mean: in comparison with the previously caluclated mean value, we can say they are rather related than not, however with some deviance.
 
 ```{r}
 mean((yhat.bag-insurance.test[,"charges"])^2)
@@ -1154,7 +1154,6 @@ We also test this with the random forest way to do it.
 ```{r}
 ## test with randomForest
 bag.insurance.2 <- randomForest(charges~., data=insurance, subset=train, mtry=6, importance =TRUE)
-# mtry = 7 means that we should use all 13 predictors for each split of the tree, hence, do bagging (not randomForrest).
 print(bag.insurance.2)
 ```
 
@@ -1164,7 +1163,7 @@ importance(bag.insurance.2)
 varImpPlot(bag.insurance.2)
 ```
 
-We here see that age and if one smokes are of biggest influence on charges.
+We here see that age and if one smokes are of biggest influence on charges. Age also seems fairly imporant.
 
 
 ## Random Forests
@@ -1181,8 +1180,9 @@ importance(rf.insurance)
 varImpPlot (rf.insurance)
 ```
 
-
 ## Boosting
+
+We now perform boosting by a generalized boosted regression modelling:
 
 ```{r}
 set.seed (1)

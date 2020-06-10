@@ -36,7 +36,6 @@ library(ipred)
 library(neuralnet) # for NN
 library(h2o)       # for NN
 library(bit64)     # for NN
-library(h2o)       # for NN
 library(tidyverse) # includes ggplot2
 library(mgcv)      # for GAM
 ```
@@ -104,7 +103,7 @@ There might be an affect between the number of children and charges. As shown ab
 plot(charges ~ sex, data =insurance, main = 'Charges against sex') 
 ```
 
-As shown above there are some differences in the charges, comparing the boxplot for the two given genders, whereas 0 stands for male, 1 stands for female. It seems that the range for 50% of the male observations is bigger than the one for the female group, meaning the distribution for males is broader than the one for females. Also the 95% quantile is about 10'000 lower than the same quantile for the male group.
+As shown above there are some differences in the charges, comparing the boxplot for the two given genders, whereas 0 stands for male, 1 stands for female. It seems that the range for 50% of the male observations is bigger than the one for the female group, meaning the distribution for males is broader than the one for females. Also the upper whisker is about 10'000 lower than the same for the male group.
 
 ```{r}
 plot(charges ~ smoker, data =insurance, main = 'Charges against smoker')
@@ -116,7 +115,7 @@ This plot is showing a clear effect of smoking on the charges. As one can see, p
 plot(charges ~ region, data =insurance, main = 'Charges against region')
 ```
 
-In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small diferences between the width of the boxes, distribution of 50% of the observation as well the setting of the 95% quantile. Those differences will be analysed later.
+In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small diferences between the width of the boxes, distribution of 50% of the observation as well the setting of the upper whisker. Those differences will be analysed later.
 
 ## Basic analysis of categorical and continous variables  
 
@@ -202,7 +201,7 @@ With each year, charges increase by 257.7226, which is the slope for the regress
 
 #### P-values  
 
-With a value of 2e-16, age seems to have a very strong effect on charges. This means that the slope of charges is not flat, not zero, so the hypothesis has to be thrown away. 
+With a value of 2e-16, age seems to have a very strong effect on charges. This means that the slope of charges is not flat, and the hypothesis of being zero has to be denied. 
 
 #### Including the gender as a second variable  
 
@@ -211,6 +210,8 @@ In this subsest, we will consider also the sex for modelling a simple regression
 lm.insurance.2 <- lm(charges ~ age + sex, data = insurance)
 summary(lm.insurance.2)
 ```
+As the output shows the additionally added variable of sex with a calculated p-value of 0.0149 seems to have an effect on charges and therefore should be considerd whithin the modeling process.
+
 #### Including interaction  
 
 Since a second variable was added, we want to explore if there might be significant interactions between age and sex, that might have to be considered for the modeling process. 
@@ -240,6 +241,7 @@ legend(x = 0.1, y = 70000,
 coef(lm.insurance.3)
 summary(lm.insurance.3)$coefficients
 ```
+The R-output shows that there isn't any significant interaction between age and sex that has to be considerd in our model. 
 
 ## Final Linear Model Development
 
@@ -252,11 +254,11 @@ Afterwards we will then compare the fitted model with a base model and test its 
 lm.insurance.all <- lm(charges ~ age + sex + bmi + children + smoker + region , data = insurance)
 summary(lm.insurance.all)
 ```
-As the above R Output shows, not every variable seems to have a significant effect on the charges.
+As the above R Output shows, not every variable seems to have a significant effect on the charges. Therfore we will seperatly test the varaibles of sex and region before dropping them from our model.
 
 #### Testing sex before dropping 
 
-Before we remove those two variables we first will make a deeper analysis.
+Before we remove the variable sex from our model we will first make a deeper analysis.
 ```{r}
 lm.sex <- lm(charges ~ sex, data=insurance)
 summary(lm.sex)
@@ -279,7 +281,7 @@ lm.region.0 <- lm(charges ~ 1 , data = insurance)
 coef(lm.region.0)
 anova(lm.region.0, lm.region.1)
 ```
-The anova test shows low evidence that the model with more parameters(in this case only the region) fits better to the data. The F-value seems to be very small and also the p-value is not really significant with 0.03089. Anyhow there is a drop in the RSS, by adding 3 additional parameters of the different regions.
+The anova test shows low evidence that the model with more parameters(in this case only the region) fits better to the data. The F-value seems to be very small and also the p-value is not highly significant with 0.03089. Anyhow there is a drop in the RSS, by adding 3 additional parameters of the different regions.
 To have a better understanding, we can additionally perform posthoc contrasts to decide afterwards if we will drop region finally from our model.
 Before performing several posthoc test and repeating this exercise to all possible combinations we will use the ggplot to explore the data quickly upfront. 
 ```{r}

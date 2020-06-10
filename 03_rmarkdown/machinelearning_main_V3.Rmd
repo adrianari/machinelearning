@@ -457,7 +457,7 @@ summary(gam.insurance.1)
 ```
 
 
-The s(changes) value of 8,974 is high and allows us to model the existing predictor with a smooth term. The corresponding visualization is shown below.
+The s(charges) value of 8,974 is high and allows us to model the existing predictor with a smooth term. The corresponding visualization is shown below.
 
 ```{r}
 plot(gam.insurance.1, residuals = TRUE, select = 1)

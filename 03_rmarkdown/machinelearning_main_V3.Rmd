@@ -1851,8 +1851,42 @@ boxplot(r.squared.lm.3, main="lm.3")
 ```
 It can be observed that lm.3 performs slightly better but it is also the most complicated. lm.1 might be the better model, the performance is just slightly lower and it is simpler. 
 
+## Cross-Validation for Decision Trees
 
+### Classification Tree
+```{r}
+n <- nrow(insurance)
+K <- 10
+size <- n%/%K
+set.seed(5)
+alea <- runif(n)
+rang <- rank(alea)
+bloc <- (rang-1)%/%size+1
+bloc <- as.factor(bloc)
+print(summary(bloc)) #Anzahl Datensätze und Daten pro Dign
 
+library(rpart)
+pred <- predict(tree.classification.region_all, newdata = insurance, type = "class")
+mc <- table(insurance$region, pred) #missclassification
+print(mc)
+
+all.err <- numeric(0)
+for (k in 1:K) {
+  baum <- rpart(region ~., data = insurance[bloc!=k,], method="class")
+  pred <- predict(baum, newdata=insurance[bloc==k,], type = "class")
+  mc <- table(insurance$region[bloc==k], pred)
+  err <- 1.0 -(mc[1,1]+mc[2,2]+mc[3,3]+mc[4,4])/sum(mc)
+  print(err)
+  all.err <- rbind(all.err,err)
+
+}
+
+print(all.err)
+
+err.cv <- mean(all.err)
+print(err.cv)
+
+```
 
 
 

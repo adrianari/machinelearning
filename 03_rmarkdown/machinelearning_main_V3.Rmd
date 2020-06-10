@@ -198,11 +198,11 @@ summary(lm.insurance)
 
 As shown in the R Output a person with the age of 0 will have a base charge of 3165.885. This intercept and its interpreation seems to be nonsensical, thus one needs to pay attention in what extend this model can be applied.
 
-With each year the charges increase by 257.7226, which is the slope for the regressionline.
+With each year, charges increase by 257.7226, which is the slope for the regressionline.
 
 #### P-values  
 
-With a value of 2e-16, age seems to have a very strong effect on charges. This means that the slope of charges is not flat, not zero, so the hypothesis has to be thrown away.
+With a value of 2e-16, age seems to have a very strong effect on charges. This means that the slope of charges is not flat, not zero, so the hypothesis has to be thrown away. 
 
 #### Including the gender as a second variable  
 
@@ -262,7 +262,7 @@ lm.sex <- lm(charges ~ sex, data=insurance)
 summary(lm.sex)
 coef(lm.sex)
 ```
-As seen in the output considering only sex is not a significant and standalone explaining variable for charges. Comparing the p-value of sex within the full model, including all possible variables, it is so high with a value of 0.693348 it can be dropped from our final model.
+As seen in the output considering only sex is not a significant and standalone explaining variable for charges. Comparing the p-value of sex within the full model, including all possible variables, it is so high with a value of 0.693348 it can be dropped from our final model. 
 
 #### Testing region before dropping  
 
@@ -280,7 +280,7 @@ coef(lm.region.0)
 anova(lm.region.0, lm.region.1)
 ```
 The anova test shows low evidence that the model with more parameters(in this case only the region) fits better to the data. The F-value seems to be very small and also the p-value is not really significant with 0.03089. Anyhow there is a drop in the RSS, by adding 3 additional parameters of the different regions.
-To have a better understanding we can additionally perform posthoc contrasts to decide afterwards if we will drop region finally from our model.
+To have a better understanding, we can additionally perform posthoc contrasts to decide afterwards if we will drop region finally from our model.
 Before performing several posthoc test and repeating this exercise to all possible combinations we will use the ggplot to explore the data quickly upfront. 
 ```{r}
 ggplot(data=insurance,
@@ -307,7 +307,7 @@ summary(lm.insurance.2)
 ```
 As the above output shows, not all of the added interactions have to be considered in the model. 
 Upfront we also tried to generate a linear model including all possible interactions. Since the output was not satisfying we skiped this analysis at this point. 
-Therefore the working assumption in this step was quite easy by editing only possible and simple interactions. Based on the results we will now drop the unnecessary interactions.
+Therefore, the working assumption in this step was quite easy by editing only possible and simple interactions. Based on the results we will now drop the unnecessary interactions.
 ```{r}
 drop1(lm.insurance.2, test="F")
 lm.insurance.3 <- update(lm.insurance.2, .~. -age:bmi - age:children - age:smoker - bmi:children -children:smoker)
@@ -326,7 +326,7 @@ As expected, there seems to be a clear relationship between charges and bmi, con
 
 ### Measure of Fit  
 
-In this section we were able to fit several models, having different levels of complexity. 
+In this section, we were able to fit several models, having different levels of complexity. 
 For the following analysis we have choosen our four models to measure the individual fit.
 Moreover we will compare them among each other to find the most appropriate model for the given insurance dataset.
 ```{r}
@@ -351,7 +351,7 @@ formula(lm.insurance.3)
 summary(lm.insurance.3)$r.squared
 summary(lm.insurance.3)$adj.r.squared
 ```
-For the comparison we used R-Squared and the adjusted R-Squared to measure the performance of our models.
+For the comparisonm we used R-Squared and the adjusted R-Squared to measure the performance of our models.
 Since the adjusted R-squared can provide a more precise view of that correlation by also taking into account how many independent variables are added to our particular models against we will base our conclusion on this parameter.
 
 Therefore we are happy to state that the latest model number three is able to explain the charges with a  percentage of 83.82329 % based on the independent variables.
@@ -610,8 +610,8 @@ table(obs = d.obs.fit.smoker$obs,
 To start of with our regression trees, we throw a glance at the continuous variables:
 
 ```{r}
-hist(insurance$bmi)
-hist(insurance$charges)
+hist(insurance$bmi, main = "Histogram of the BMI")
+hist(insurance$charges, main = "Histogram of charges")
 ```
 
 One can see that BMI seems to be normally distributed whereas charges follows the pattern of a 1/x-function. 
@@ -626,7 +626,7 @@ insurance$charges <- log(insurance$charges)
 Please note that hence, all charges values for this chapter will strictly be indicated in log-value and not the true one.
 
 ```{r}
-hist(insurance$charges)
+hist(insurance$charges, main = "Histogram of the charges after applying logarithm")
 ```
 
 Applying a log-transformation solves this issue. 
@@ -641,6 +641,7 @@ set.seed(99999)
 tree.regression.bmi <- tree(bmi~., data=insurance)
 plot(tree.regression.bmi)
 text(tree.regression.bmi)
+mtext("Regression tree for BMI, using all data \n")
 ```
 
 We here receive a tree with six terminal nodes. Thanks to the tree-function, the tree is already created by recursive binary splitting.
@@ -658,14 +659,16 @@ We here establish a prediction for our BMI tree and also compare the predictions
 
 ```{r}
 tree.regression.bmi.pred <- predict(tree.regression.bmi, insurance, type="vector")
-plot(tree.regression.bmi.pred, insurance$bmi)
+plot(tree.regression.bmi.pred, insurance$bmi, main = "Prediction of BMI against real BMI values")
 abline(0 ,1)
 ```
+
+We here see how the prediction performs for the BMI values. As one can see, there seem to be rather a fair number of residuals.
 
 
 #### Comparison of Prediction <-> True Values
 
-Further, we examine the residuals:
+Further, we examine the above said residuals:
 
 ```{r}
 error_regression1 <- tree.regression.bmi.pred-insurance$bmi
@@ -687,7 +690,7 @@ ggplot(data=error_regression1_dataframe) + geom_boxplot(aes(y=error_regression1)
 A boxplot further demonstrates the rather normally distributed data with mean around 0. It is apparent for there to be more outliers in the negative y-axis area than the positive y-axis area. 
 
 ```{r}
-hist(error_regression1)
+hist(error_regression1, main = "Histogram of error for the prediction of BMI")
 ```
 
 ```{r}
@@ -699,7 +702,7 @@ cat("\n")
 cat(deviation_bmi)
 ```
 
-So the average estimation of a BMI is about 5.39 BMI points away from the true value (median).
+So the average estimation of a BMI is about 5.39 BMI points away from the true value.
 
 We now switch to the train-test approach.
 
@@ -712,6 +715,7 @@ train <- sample(1:total, as.integer(total * ratio))
 tree.regression.bmi2 <- tree(bmi~., insurance, subset=train)
 plot(tree.regression.bmi2)
 text(tree.regression.bmi2, pretty=12, cex=0.75)
+mtext("Regression tree for BMI, using train data \n")
 ```
 
 By working with the test data, we  can see at this point a change, meaning a possible overfit. Were there previously six end nodes, we now have seven end notes, with variables used "charges", "smoker", "region" and "age", as also can be seen here:
@@ -763,9 +767,10 @@ summary(insurance$charges)
 tree.regression.charges <- tree(charges~., data=insurance)
 plot(tree.regression.charges)
 text(tree.regression.charges)
+mtext("Regression tree for Charges, using all data \n")
 ```
 
-We receive a tree with seven end nodes and four influencing variables, as also the summary further demonstrates:
+If one smokes seems to be the crucial factor to start of the charges classification. We further receive a tree with seven end nodes and four influencing variables, as also the summary further demonstrates:
 
 ```{r}
 summary(tree.regression.charges)
@@ -780,7 +785,7 @@ We are now again predicting the data that has already been used for training the
 
 ```{r}
 tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")
-plot(tree.regression.charges.pred, insurance$charges)
+plot(tree.regression.charges.pred, insurance$charges, main="Prediction of Charges against real Charges")
 abline(0 ,1)
 ```
 

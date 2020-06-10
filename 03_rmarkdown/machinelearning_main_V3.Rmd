@@ -789,6 +789,8 @@ plot(tree.regression.charges.pred, insurance$charges, main="Prediction of Charge
 abline(0 ,1)
 ```
 
+We here see how our model predicts the charges to by (x-axis) in comparison to what the charges actually are. 
+
 #### Comparison Prediction <-> True Values
 
 ```{r}
@@ -813,7 +815,7 @@ The above boxplot further demonstrates that there is a slight bias in the distri
 
 
 ```{r}
-hist(error_regression.charges1)
+hist(error_regression.charges1, main = "Histrogram of the Error for charges")
 ```
 
 Here goes to further show that the data points are slightly skewed. However, mean of the residuals is still roughly at 1. 
@@ -844,9 +846,11 @@ train.charges <- sample(1:total, as.integer(total * ratio))
 tree.regression.charges2 <- tree(charges~., insurance, subset=train)
 plot(tree.regression.charges2)
 text(tree.regression.charges2, pretty=12, cex=0.75)
+mtext("Regression tree for Charges, using train data \n")
+
 ```
 
-We now receive a tree with exactly the same number of nodes but where the criterias have different values.
+We now receive a tree with exactly the same number of nodes but where the criterias have different values, except for the first node, which remain the same (non-smoker --> left branch, smoker --> right branch).
 
 ```{r}
 summary(tree.regression.charges2)
@@ -899,17 +903,20 @@ We here receive a classification tree with four end nodes. Furthermore our RMS i
 ```{r}
 plot(tree.classification.region_all)
 text(tree.classification.region_all, pretty=1, cex=0.75)
+mtext("Classification tree for regions, using all data (0: SE, 1: SW, 2: NE, 3:NW 3)\n")
 ```
 
-It appears that the high misclassication rate is partly due to only 2 of the 4 factors being applied in the classification tree. We thus go into testing mode:
+It appears that the high misclassication rate is partly due to only 2 of the 4 factors being applied in the classification tree. Most important here is if one is under the age of 18.5 years (left branch) or above (right branch).
+We thus go into testing mode:
 
 ```{r}
 tree.classification.region <- tree(region~., data=insurance, subset=train)
 plot(tree.classification.region)
 text(tree.classification.region)
+mtext("Classification tree for regions, using only train data (0: SE, 1: SW, 2: NE, 3:NW 3)\n")
 ```
 
-Working with our training set, we see a clear change: we now have five terminal nodes as well as the factor of "northeast" that is not part of the equation.
+Working with our training set, we see a clear change: we now have five terminal nodes as well as the factor of 2 --> "northeast" that is not part of the equation.
 
 
 ```{r}
@@ -993,6 +1000,7 @@ test = 34.55
 ```{r}
 tree.regression.bmi.pruning = cv.tree(tree.regression.bmi2, FUN = prune.tree)
 plot(tree.regression.bmi.pruning, type = "b")
+title("Deviance against size and K/alpha for BMI")
 ```
 
 With cvtree, the crossvalidation is done automatically for one. We here see that the tree with seven end nodes has the smallest cross-validation error of about 27'250. This is also further shown in below table. Four terminal end leaves is furthermore also very interesting as afterwards (up to 7), the changes are only small in comparison with the steep lines from 1 to 3.
@@ -1009,6 +1017,7 @@ tree.regression.bmi.pruned <- prune.tree(tree.regression.bmi2, best = 6)
 
 plot(tree.regression.bmi.pruned)
 text(tree.regression.bmi.pruned, pretty=1, cex=0.75)
+mtext("Pruned regression tree for BMI, with best = 6 \n")
 ```
 
 ```{r}
@@ -1016,6 +1025,7 @@ tree.regression.bmi.pruned2 <- prune.tree(tree.regression.bmi2, best = 4)
 
 plot(tree.regression.bmi.pruned2)
 text(tree.regression.bmi.pruned2, pretty=1, cex=0.75)
+mtext("Pruned regression tree for BMI, with best = 4 \n")
 ```
 
 ```{r}
@@ -1051,8 +1061,8 @@ We have a length of four whereas the size of four is the optimal size.
 
 ```{r}
 par(mfrow=c(1,2))
-plot(tree.classification.region.pruning$size, tree.classification.region.pruning$dev, type="b")
-plot(tree.classification.region.pruning$k, tree.classification.region.pruning$dev, type="b")
+plot(tree.classification.region.pruning$size, tree.classification.region.pruning$dev, type="b", main = "Effect of size on deviance")
+plot(tree.classification.region.pruning$k, tree.classification.region.pruning$dev, type="b", main= "Effect of alpha on deviance")
 par(mfrow=c(1,1))
 ```
 
@@ -1066,6 +1076,7 @@ prune.tree.classification.region <- prune.misclass(tree.classification.region, b
 summary (prune.tree.classification.region)
 plot(prune.tree.classification.region)
 text(prune.tree.classification.region,pretty=0)
+mtext("Pruned classification tree for region, with best = 3 \n")
 ```
 The residual mean deviane is at 2.633 whereas the misclassification error is at 65.28%.
 
@@ -1075,6 +1086,7 @@ prune.tree.classification.region2 <- prune.misclass(tree.classification.region, 
 summary (prune.tree.classification.region2)
 plot(prune.tree.classification.region2)
 text(prune.tree.classification.region2,pretty=0)
+mtext("Pruned classification tree for region, with best = 5 \n")
 
 ```
 
@@ -1117,10 +1129,9 @@ We now are bagging our dataset. We furthermore say that we are happy with an est
 ```{r}
 bag.insurance <- bagging(charges~., data=insurance, subset=train, nbagg=20, coob = TRUE)
 print(bag.insurance)
-#bag.insurance still needs to be squared at this point
 ```
 
-We here receive a root mean squared error of 0.391 --> root mean error = 0.152881.
+We here receive a root mean squared error of 0.391 --> mean squared error = 0.152881 (as the results one receives is rooted).
 
 We now predict performance from our bagged model:
 

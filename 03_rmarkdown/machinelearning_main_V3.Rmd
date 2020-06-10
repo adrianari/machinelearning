@@ -1795,8 +1795,10 @@ for(i in 1:100){
   train.YES <- sample(x = c(TRUE, FALSE),
                       size = nrow(insurance),
                       replace = TRUE)
-insurance.train <- insurance[train.YES, ]
-insurance.test <- insurance[!train.YES, ]
+
+  insurance.train <- insurance[train.YES, ]
+
+  insurance.test <- insurance[!train.YES, ]
   
 
   # fit model with train data 
@@ -1827,28 +1829,35 @@ insurance.test <- insurance[!train.YES, ]
   rf.insurance.predict <- predict(rf.insurance.train, 
                           newdata = insurance.test)
   
-  # compute r.squared and save in list
+
+  #RMSE
   
-  r.squared.lm.insurance.3[i] <- cor(lm.insurance.3.predict, 
-                           insurance.test$charges)^2
+  RMSE.1 <- c()
+  RMSE.2 <- c()
+  RMSE.3 <- c()
+  RMSE.4 <- c()
+
+  RMSE.1[i] <- RMSE(lm.insurance.3.predict, insurance.test$charges)
+  RMSE.2[i] <- RMSE(lm.insurance.all.predict, insurance.test$charges)
+
+  RSS_charges <- sum((insurance$charges-tree.regression.charges.predict^2)
+  MSE_charges <- RSS_charges/length(tree.regression.charges.predict) 
+  deviation_charges <- sqrt(MSE_charges)
   
-  r.squared.lm.insurance.all[i] <- cor(lm.insurance.all.predict, 
-                           insurance.test$charges)^2
   
-  r.squared.tree.regression.charges[i] <- cor(tree.regression.charges.predict, 
-                           insurance.test$charges)^2
-  
-  r.squared.rf.insurance[i] <- cor(rf.insurance.predict, 
-                           insurance.test$charges)^2
-  
-}
+  }
+
+
+
+
+
 ```
 
-The out of sample performance, using R Squared as measure is the following: 
+The out of sample performance, using RMSE as measure is the following: 
 
 ```{r}
 #lm.3 
-mean(r.squared.lm.insurance.3)
+mean(RMSE.1)
 #lm.amm
 mean(r.squared.lm.insurance.all)
 #tree regression

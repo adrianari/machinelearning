@@ -1783,7 +1783,7 @@ summary(rf.insurance)$r.squared
 The out of sample performance is computed by using 50:50 training and test data and repeating the process 100 times. 
 
 ```{r}
-set.seed(7)
+set.seed(5)
 
 
 RMSE.1 <- c()
@@ -1837,11 +1837,10 @@ for(i in 1:100){
   
   RMSE.1[i] <- RMSE(lm.insurance.3.predict, insurance.test$charges)
   RMSE.2[i] <- RMSE(lm.insurance.all.predict, insurance.test$charges)
+  RMSE.3[i] <- RMSE(tree.regression.charges.predict, insurance.test$charges)
+  RMSE.4[i] <- RMSE(rf.insurance.predict, insurance.test$charges)
   
     }
-
-
-
 
 
 ```

@@ -461,7 +461,7 @@ summary(gam.insurance.1)
 The s(charges) value of 8,974 is high and allows us to model the existing predictor with a smooth term. The corresponding visualization is shown below.
 
 ```{r}
-plot(gam.insurance.1, residuals = TRUE, select = 1)
+plot(gam.insurance.1, residuals = TRUE, select = 1, main = "GAM model of charges")
 ```
 
 If you only consider the costs greater than 18'000, the result is identical with the previous consideration. A linear model is also preferable in this case.
@@ -474,7 +474,7 @@ summary(gam.insurance.2)
 ```
 
 ```{r}
-plot(gam.insurance.2, residuals = TRUE, select = 1)
+plot(gam.insurance.2, residuals = TRUE, select = 1, main = "GAM model of charges over 18'000")
 ```
 
 

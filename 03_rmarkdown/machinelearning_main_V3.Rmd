@@ -113,7 +113,7 @@ plot(charges ~ smoker, data =insurance, xlab = "nonsmoker = 0 / smoker = 1, ", m
 This plot is showing a clear effect of smoking on the charges. As one can see, people who are not smoking (value = 0) have mean charges that are three times lower than the charges for smokers (value = 1). Even the outliers of the non-smokers are still within the range of the upper boxplot quartil of the smokers.
 
 ```{r}
-plot(charges ~ region, data =insurance, main = 'Charges against region')
+plot(charges ~ region, data =insurance, xlab = "0 = southeast / 1 = southwest / 2 = northeast / 3 = northwest", main = 'Charges against region')
 ```
 
 In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small differences between the width of the boxes, distribution of 50% of the observation as well the setting of the upper whisker. Those differences will be analysed later.

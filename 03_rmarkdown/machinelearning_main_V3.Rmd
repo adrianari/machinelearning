@@ -412,7 +412,7 @@ What is the result if you look at the men and women separately.
 ggplot(data = insurance,
          mapping = aes(y = charges,
                        x = sex)) +
-    geom_boxplot() + ggtitle("charges depending on gender") + xlab("0: male, 1: female")  
+    geom_boxplot() + ggtitle("charges depending on gender")
 ```
 
 This graph shows that there is not really a difference in the median between women and men. The only difference is in the middle 50% range where the men have a larger range.
@@ -1417,6 +1417,7 @@ data$charges <- (data$charges - min(data$charges))/(max(data$charges) - min(data
 data$age <- (data$age - min(data$age))/(max(data$age) - min(data$age)) 
 data$bmi <- (data$bmi - min(data$bmi))/(max(data$bmi)-min(data$bmi)) 
 ```
+
 ### Partition into training and test subsets  
 
 As shown above we already cleansed and normalized data. Now we will create two subsets of the insurance data set. Therefore we will execute a partition, so we will have a training set covering 70% of the original dataset while the test set will cover the remaining 30%.
@@ -1517,6 +1518,7 @@ nn2 <- neuralnet(smoker~charges + age + bmi,
 #print(nn)
 plot(nn2, rep='best')
 ```
+
 ##### Prediction on training subset  
 
 ```{r}
@@ -1586,6 +1588,7 @@ nn3 <- neuralnet(smoker~charges + age + bmi,
 #print(nn)
 plot(nn3, rep='best')
 ```
+
 ##### Prediction on training subset
 
 ```{r}
@@ -1649,6 +1652,7 @@ h2o.init()
 train_hf <- as.h2o(training)
 model_dl <- h2o.deeplearning(x = 2:4, y = 1, training_frame = train_hf, nfolds = 10, seed=545, verbose = TRUE)
 ```
+
 ### Prediction on training
 
 ```{r}
@@ -1691,7 +1695,7 @@ NN2                     | 97.97 %                   | 96.28 %
 NN3                     | 97.75 %                   | 97.52 %
 h2o                     | 96.68 %                   | 96.52 %
 
-In the above table you can see the last results for all created models which are nearly the same.
+In the above table you can fint the latest results for all created models which are nearly the same.
 Based on the sample results, there is no huge difference between using the neuralnet package or the h2o package.
 Moreover the parameters for the hidden layer were chosen by a trial and error approach. We tried to create different levels for the hidden parameter, to explore if the performance will increase with the given complexity.
 Since the results are not reflecting this assumption and all performance results are in the same range, all models can be used for an adequate classification, whether a person is a smoker or not.
@@ -1889,7 +1893,7 @@ We recall the classification errors in the above code:
 (tree.classification.region.pred.error2)
 ```
 
-We now recheck if misclassification improves when cross-validiting by a 10fold crossvalidations our model:
+We now recheck if misclassification improves when cross-validiting our model:
 
 
 ```{r}

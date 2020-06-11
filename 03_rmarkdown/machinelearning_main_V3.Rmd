@@ -841,7 +841,7 @@ RSS here is at 211.86, the deviation at 0.4.
 
 #### Train-Test-Approach
 
-Again, we use the train-test approach to demonstrate the importance to not use all the data to train one's modell.
+Again, we use the train-test approach to demonstrate the importance to not use all the data to train one's model.
 
 ```{r}
 ratio <- 0.7

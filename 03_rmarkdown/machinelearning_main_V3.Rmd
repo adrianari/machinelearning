@@ -317,7 +317,7 @@ lm.insurance.3 <- update(lm.insurance.2, .~. -age:bmi - age:children - age:smoke
 summary(lm.insurance.3)
 ```
 
-After considering also the interaction between bmi and smoker, which seems to be significant with a small p-value of 2e-16. The variable bmi itself has now a p-value of 0.82014. Therefore lets have a look on the relationship between bmi and smoker to have a better understanding:
+After considering also the interaction between bmi and smoker, which seems to be significant with a small p-value of 2e-16. The variable bmi itself has now a p-value of 0.82014. Therefore let's have a look on the relationship between bmi and smoker to have a better understanding:
 
 ```{r}
 ggplot(data=insurance,

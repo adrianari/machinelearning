@@ -423,7 +423,7 @@ ggplot(data = insurance,
                      x = charges)) +
   geom_point() +
   geom_smooth(se = FALSE) +
-  facet_wrap(. ~ sex) + ggtitle("age depending on charges")
+  facet_wrap(. ~ sex) + ggtitle("charges depending on gender (0: male, 1: female)")  
 ```
 
 The rough course of costs as a function of age is comparable for men and women. A closer look at the result reveals slight differences. However, this is not a reason to differentiate the models according to gender.

@@ -1916,7 +1916,7 @@ insurance$region <- as.factor(insurance$region)
 head(insurance)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 set.seed(5)
 

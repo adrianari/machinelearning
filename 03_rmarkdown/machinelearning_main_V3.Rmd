@@ -330,7 +330,7 @@ As expected, there seems to be a clear relationship between charges and bmi, con
 ### Measure of Fit  
 
 In this section, we were able to fit several models, having different levels of complexity. 
-For the following analysis we have choosen our four models to measure the individual fit.
+For the following analysis we have chosen our four models to measure the individual fit.
 Moreover we will compare them among each other to find the most appropriate model for the given insurance dataset.
 ```{r}
 formula(lm.insurance.all)

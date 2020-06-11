@@ -557,7 +557,7 @@ summary(glm.smoker.2)
 exp(coef(glm.smoker.2)) 
 ```
 
-Age and BMI has a negative effect on smoker. This means the higher a persons BMI and age, the lower the probability that the person is a smoker. 
+Age and bmi has a negative effect on smoker. This means the higher a persons bmi and age, the lower the probability that the person is a smoker. 
 Charges has a positive effect. This means the higher a persons charges, the higher is
 the possibility that the person smokes.
 
@@ -617,7 +617,7 @@ hist(insurance$bmi, main = "Histogram of the BMI")
 hist(insurance$charges, main = "Histogram of charges")
 ```
 
-One can see that BMI seems to be normally distributed whereas charges follows the pattern of a 1/x-function. 
+One can see that bmi seems to be normally distributed whereas charges follows the pattern of a 1/x-function. 
 
 We thus normalize "charges" by logarithming it. 
 (Attention: Please do only execute the code block (convertion to log) below once as executing it several times will apply the logarithmic function several times)
@@ -648,7 +648,7 @@ mtext("Regression tree for BMI, using all data \n")
 ```
 
 We here receive a tree with six terminal nodes. Thanks to the tree-function, the tree is already created by recursive binary splitting.
-As the variables (internal nodes) determining the BMI, "charges" have been applied as well as if one smokes and from which region one comes. This can also be seen in below summary:
+As the variables (internal nodes) determining the bmi, "charges" have been applied as well as if one smokes and from which region one comes. This can also be seen in below summary:
 
 ```{r}
 summary(tree.regression.bmi)
@@ -658,7 +658,7 @@ Our residual mean deviance, aka R-squared-error ist at 29.23.
 
 
 #### Prediction
-We here establish a prediction for our BMI tree and also compare the predictions with the true value of the BMI:
+We here establish a prediction for our bmi tree and also compare the predictions with the true value of the bmi:
 
 ```{r}
 tree.regression.bmi.pred <- predict(tree.regression.bmi, insurance, type="vector")
@@ -666,7 +666,7 @@ plot(tree.regression.bmi.pred, insurance$bmi, main = "Prediction of BMI against 
 abline(0 ,1)
 ```
 
-We here see how the prediction performs for the BMI values. As one can see, there seem to be rather a fair number of residuals.
+We here see how the prediction performs for the bmi values. As one can see, there seem to be rather a fair number of residuals.
 
 
 #### Comparison of Prediction <-> True Values
@@ -705,7 +705,7 @@ cat("\n")
 cat(deviation_bmi)
 ```
 
-So the average estimation of a BMI is about 5.39 BMI points away from the true value.
+So the average estimation of a bmi is about 5.39 bmi points away from the true value.
 
 We now switch to the train-test approach.
 
@@ -995,7 +995,7 @@ We now continue to prune the trees as so far, we actually managed to create an o
 
 ### Pruning the continous BMI variable
 
-We recall: the BMI showed a clear overfit when comparing the RSS of train <-> test data:
+We recall: the bmi showed a clear overfit when comparing the RSS of train <-> test data:
 train = 27.21
 test = 34.55
 

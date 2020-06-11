@@ -635,7 +635,7 @@ hist(insurance$charges, main = "Histogram of the charges after applying logarith
 
 Applying a log-transformation solves this issue. 
 
-To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
+To begin with, we make the rookie mistake to use all the data, which we will then later change by applying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
 
 
 ### Regression tree - BMI

@@ -1195,7 +1195,7 @@ boost.insurance <- gbm(charges~.,data=insurance[train,],
 summary(boost.insurance)
 ```
 
-We now show partial dependence the for most important factors:
+We now show partial dependence the four most important factors:
 
 ```{r}
 plot(boost.insurance ,i="bmi")

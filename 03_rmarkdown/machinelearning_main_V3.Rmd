@@ -1904,12 +1904,12 @@ for (k in 1:K) {
   pred <- predict(baum, newdata=insurance[bloc==k,], type = "class")
   mc <- table(insurance$region[bloc==k], pred)
   err <- 1.0 -(mc[1,1]+mc[2,2]+mc[3,3]+mc[4,4])/sum(mc)
-  print(err)
+  #print(err)
   all.err <- rbind(all.err,err)
 
 }
 
-print(all.err)
+#print(all.err)
 
 err.cv <- mean(all.err)
 print(err.cv)

@@ -48,7 +48,7 @@ The dataset "insurance" from https://www.kaggle.com/mirichoi0218/insurance is im
 
 ```{r}
 #getwd()
-setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
+#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
 # smoker = 1 / nonsmoker = 0
@@ -1776,8 +1776,11 @@ summary(lm.insurance.all)$r.squared
 summary(tree.regression.charges)
 
 
+
 ```
 
+In terms of 
+As decision trees do not work with an R-squared value per se, we take the residual mean deviance for the decision trees (here at 0.1592). The residual mean deviance can be considered as R-squared error. 
 
 
 

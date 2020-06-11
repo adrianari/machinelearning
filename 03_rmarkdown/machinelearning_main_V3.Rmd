@@ -655,7 +655,7 @@ As the variables (internal nodes) determining the bmi, "charges" have been appli
 summary(tree.regression.bmi)
 ```
 
-Our residual mean deviance, aka R-squared-error ist at 29.23.
+Our residual mean deviance, aka R-squared-error is at 29.23.
 
 
 #### Prediction

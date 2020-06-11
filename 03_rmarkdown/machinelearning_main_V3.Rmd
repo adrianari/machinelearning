@@ -410,7 +410,7 @@ What is the result if you look at the men and women separately.
 ggplot(data = insurance,
          mapping = aes(y = charges,
                        x = sex)) +
-    geom_boxplot() + ggtitle("gender depending on charges")
+    geom_boxplot() + ggtitle("charges depending on gender")
 ```
 
 This graph shows that there is not really a difference in the median between women and men. The only difference is in the middle 50% range where the men have a larger range.

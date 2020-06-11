@@ -287,7 +287,8 @@ To have a better understanding, we can additionally perform posthoc contrasts to
 Before performing several posthoc test and repeating this exercise to all possible combinations we will use the ggplot to explore the data quickly upfront. 
 ```{r}
 ggplot(data=insurance,
-       mapping = aes(y = charges, x= age))+ geom_point()+geom_smooth(method = 'lm') + facet_grid(. ~region)
+       mapping = aes(y = charges, x= age))+ geom_point()+geom_smooth(method = 'lm') + facet_grid(. ~region) +
+  ggtitle("Charges against age per region (SE (0), SW (1), NE (2) and NW (3)")
 ```
 Using the visualization, it seems that there seems to be no obvious difference and effect. Therefore, we decide to drop also the variable region from our linear model.
 

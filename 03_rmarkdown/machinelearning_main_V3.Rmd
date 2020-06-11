@@ -354,7 +354,7 @@ formula(lm.insurance.3)
 summary(lm.insurance.3)$r.squared
 summary(lm.insurance.3)$adj.r.squared
 ```
-For the comparisonm we used R-Squared and the adjusted R-Squared to measure the performance of our models.
+For the comparison we used R-Squared and the adjusted R-Squared to measure the performance of our models.
 Since the adjusted R-squared can provide a more precise view of that correlation by also taking into account how many independent variables are added to our particular models against we will base our conclusion on this parameter.
 
 Therefore we are happy to state that the latest model number three is able to explain the charges with a  percentage of 83.82329 % based on the independent variables.

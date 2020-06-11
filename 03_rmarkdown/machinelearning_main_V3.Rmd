@@ -1760,7 +1760,6 @@ Regression (charges)
 * lm.insurance.3 #best lm
 * lm.insurance.all # lm with all variables
 * tree.regression.charges #regression tree
-* rf.insurance #random forest
 
 Classification (smoker)
 * gam.insurance.1$call
@@ -1859,6 +1858,8 @@ mean(RMSE.2)
 mean(RMSE.3)
 
 ```
+
+
 
 ```{r}
 par(mfrow=c(1,4))

@@ -324,7 +324,7 @@ ggplot(data=insurance,
        mapping = aes(y = charges, x= bmi))+ geom_point()+ geom_smooth(method = 'lm') +facet_grid(. ~ smoker)
 ```
 
-As expected, there seems to be a clear relationship between charges and bmi, considering if a person is smoking or not. Since this relationship makes even sense from the domain perspective, we will definitly keep this in our model.
+As expected, there seems to be a clear relationship between charges and bmi, considering if a person is smoking or not. Since this relationship makes even sense from the domain perspective, we will definitely keep this in our model.
 
 
 ### Measure of Fit  

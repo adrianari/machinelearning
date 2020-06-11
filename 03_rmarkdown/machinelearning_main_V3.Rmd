@@ -1410,9 +1410,10 @@ options(digits = 4) # suggested number of digits to display
 
 data <-dplyr::select(insurance, smoker, charges, age, bmi)
 
-data$charges <- (data$charges - min(data$charges))/(max(data$charges) - min(data$charges)) # Min-Max Normalization
-data$age <- (data$age - min(data$age))/(max(data$age) - min(data$age)) # Min-Max Normalization
-data$bmi <- (data$bmi - min(data$bmi))/(max(data$bmi)-min(data$bmi)) # Min-Max Normalization
+# Min-Max Normalization
+data$charges <- (data$charges - min(data$charges))/(max(data$charges) - min(data$charges)) 
+data$age <- (data$age - min(data$age))/(max(data$age) - min(data$age)) 
+data$bmi <- (data$bmi - min(data$bmi))/(max(data$bmi)-min(data$bmi)) 
 ```
 ### Partition into training and test subsets  
 

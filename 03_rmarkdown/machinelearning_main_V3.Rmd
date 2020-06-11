@@ -116,11 +116,11 @@ This plot is showing a clear effect of smoking on the charges. As one can see, p
 plot(charges ~ region, data =insurance, main = 'Charges against region')
 ```
 
-In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small differences between the width of the boxes, distribution of 50% of the observation as well the setting of the upper whisker. Those differences will be analyzed later.
+In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small differences between the width of the boxes, distribution of 50% of the observation as well the setting of the upper whisker. Those differences will be analysed later.
 
 ## Basic analysis of categorical and continuous variables
 
-In this part we want to show exemplary how the relationship between charges and age can be affected by adding a categorical variable. This can be used for further data explorations and can be adapted on all other variables. For this section, we will just perform this enlargement for the case of the age to illustrate some possible relationships, which also can be helpful for the following modeling process.
+In this part we want to show exemplary how the relationship between charges and age can be affected by adding a categorical variable. This can be used for further data explorations and can be adapted on all other variables. For this section, we will just perform this enlargement for the case of the age to illustrate some possible relationships, which also can be helpful for the following modelling process.
 
 First, we add the variable "sex" to charges against age.
 ```{r}
@@ -211,7 +211,7 @@ In this subset, we will consider also the sex for modelling a simple regression 
 lm.insurance.2 <- lm(charges ~ age + sex, data = insurance)
 summary(lm.insurance.2)
 ```
-As the output shows the additionally added variable of sex with a calculated p-value of 0.0149 seems to have an effect on charges and therefore should be considerd within the modeling process.
+As the output shows the additionally added variable of sex with a calculated p-value of 0.0149 seems to have an effect on charges and therefore should be considerd within the modelling process.
 
 #### Including interaction  
 
@@ -609,7 +609,7 @@ table(obs = d.obs.fit.smoker$obs,
 
 ## Regression trees
 
-### Inspectig the Data
+### Inspecting the Data
 
 To start of with our regression trees, we throw a glance at the continuous variables:
 
@@ -635,7 +635,7 @@ hist(insurance$charges, main = "Histogram of the charges after applying logarith
 
 Applying a log-transformation solves this issue. 
 
-To begin with, we make the rookie mistake to use all the data, which we will then later change by appying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
+To begin with, we make the rookie mistake to use all the data, which we will then later change by applying a train-test approach. This is done to empasize the importance of not using all the data to train one's model by showing the differences in methods.
 
 
 ### Regression tree - BMI
@@ -655,7 +655,7 @@ As the variables (internal nodes) determining the bmi, "charges" have been appli
 summary(tree.regression.bmi)
 ```
 
-Our residual mean deviance, aka R-squared-error ist at 29.23.
+Our residual mean deviance, aka R-squared-error is at 29.23.
 
 
 #### Prediction
@@ -785,7 +785,7 @@ Our residual mean deviance (R-squared-error) us at 0.1592. Note that this value 
 
 #### Prediction
 
-We are now again predicting the data that has already been used for training the modell.
+We are now again predicting the data that has already been used for training the model.
 
 ```{r}
 tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")
@@ -1410,9 +1410,10 @@ options(digits = 4) # suggested number of digits to display
 
 data <-dplyr::select(insurance, smoker, charges, age, bmi)
 
-data$charges <- (data$charges - min(data$charges))/(max(data$charges) - min(data$charges)) # Min-Max Normalization
-data$age <- (data$age - min(data$age))/(max(data$age) - min(data$age)) # Min-Max Normalization
-data$bmi <- (data$bmi - min(data$bmi))/(max(data$bmi)-min(data$bmi)) # Min-Max Normalization
+# Min-Max Normalization
+data$charges <- (data$charges - min(data$charges))/(max(data$charges) - min(data$charges)) 
+data$age <- (data$age - min(data$age))/(max(data$age) - min(data$age)) 
+data$bmi <- (data$bmi - min(data$bmi))/(max(data$bmi)-min(data$bmi)) 
 ```
 ### Partition into training and test subsets  
 

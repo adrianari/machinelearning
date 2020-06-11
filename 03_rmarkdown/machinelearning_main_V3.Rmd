@@ -48,7 +48,7 @@ The dataset "insurance" from https://www.kaggle.com/mirichoi0218/insurance is im
 
 ```{r}
 #getwd()
-#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
+setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
 # smoker = 1 / nonsmoker = 0
@@ -1839,8 +1839,7 @@ for(i in 1:100){
   
   RMSE.1[i] <- rmse(lm.insurance.3.predict, insurance.test$charges)
   RMSE.2[i] <- rmse(lm.insurance.all.predict, insurance.test$charges)
-  RMSE.3[i] <- sqrt((sum(insurance.test[3]-tree.regression.charges.predict[3])^2)/length(insurance.test))
-    
+  RMSE.3[i] <- sqrt((sum(tree.regression.charges.predict-insurance.test[7])^2)/length(tree.regression.charges.predict))
     
 
   
@@ -1858,6 +1857,7 @@ mean(RMSE.1)
 mean(RMSE.2)
 #tree regression
 mean(RMSE.3)
+
 ```
 
 ```{r}

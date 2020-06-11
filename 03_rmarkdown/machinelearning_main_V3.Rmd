@@ -215,7 +215,7 @@ As the output shows the additionally added variable of sex with a calculated p-v
 
 #### Including interaction  
 
-Since a second variable was added, we want to explore if there might be significant interactions between age and sex, that might have to be considered for the modeling process. 
+Since a second variable was added, we want to explore if there might be significant interactions between age and sex, that might have to be considered for the modelling process. 
 ```{r}
 lm.insurance.3 <-lm(charges ~ age * sex, data =insurance)
 summary(lm.insurance.3)
@@ -242,7 +242,7 @@ legend(x = 0.1, y = 70000,
 coef(lm.insurance.3)
 summary(lm.insurance.3)$coefficients
 ```
-The R-output shows that there isn't any significant interaction between age and sex that has to be considerd in our model. 
+The R-output shows that there isn't any significant interaction between age and sex that has to be considered in our model. 
 
 ## Final Linear Model Development
 

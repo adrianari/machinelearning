@@ -120,7 +120,7 @@ In this case, there seems not to be any clear relationship or trend visible betw
 
 ## Basic analysis of categorical and continuous variables
 
-In this part we want to show exemplary how the relationship between charges and age can be affected by adding a categorical variable. This can be used for further data explorations and can be adapted on all other variables. For this section, we will just perform this enlargement for the case of the age to illustrate some possible relationships, which also can be helpful for the following modeling process.
+In this part we want to show exemplary how the relationship between charges and age can be affected by adding a categorical variable. This can be used for further data explorations and can be adapted on all other variables. For this section, we will just perform this enlargement for the case of the age to illustrate some possible relationships, which also can be helpful for the following modelling process.
 
 First, we add the variable "sex" to charges against age.
 ```{r}

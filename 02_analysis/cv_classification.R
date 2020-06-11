@@ -32,9 +32,14 @@ for(i in 1:10){
   
   mod.2 <- svm(smoker~charges+bmi, data = insurance.train, cost =5)
   
-  mod.3 <- neuralnet(formula = smoker ~ charges + age + bmi, data = insurance.train, 
-                     hidden = c(3, 2, 1), threshold = 0.0025, lifesign = "full", 
-                     lifesign.step = 500, linear.output = FALSE)
+  set.seed(444)
+  mod.3 <- neuralnet(smoker~charges + age + bmi, 
+                     data = insurance.train, 
+                     hidden = c(3, 2, 1), 
+                     threshold = 0.0025, 
+                     lifesign = "full", 
+                     lifesign.step = 500, 
+                     linear.output = FALSE)
   
   
   # make prediction on test data
@@ -66,4 +71,6 @@ mean(MC.2)
 mean(MC.3)
 
 head(mod.3.pred)
+
+
 

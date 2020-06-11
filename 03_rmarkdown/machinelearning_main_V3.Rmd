@@ -48,7 +48,7 @@ The dataset "insurance" from https://www.kaggle.com/mirichoi0218/insurance is im
 
 ```{r}
 #getwd()
-setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
+#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
 str(insurance)
 # smoker = 1 / nonsmoker = 0
@@ -1798,7 +1798,6 @@ RMSE.2 <- c()
 RMSE.3 <- c()
 RMSE.4 <- c()
 
-library(Metrics)
 
 for(i in 1:100){
   
@@ -1867,9 +1866,7 @@ mean(RMSE.3)
 
 As one can see, the best linear model also performs in cross-validation as the better in comparison with the linear model with all variables as well as the decision tree. This is not very astonishing, as with more variables, the more variance once gets. 
 
-What is interesting to see, is that the lm modell with all the variables and the regression tree perform very similarly. 
-
-
+What is interesting to see, is that the lm modell with all the variables and the regression tree perform very similarly, albeit not with the best values. 
 
 ```{r}
 par(mfrow=c(1,4))
@@ -1877,7 +1874,6 @@ boxplot(RMSE.1, main="lm.3")
 boxplot(RMSE.2, main="lm.all")
 boxplot(RMSE.3, main="regression tree")
 ```
-
 
 When having a closer look at the boxplots however, one can see the difference in the methods. The linear models perform very regularily and very symmetrically, whereas decision trees have a much larger distribution.
 
@@ -1894,7 +1890,6 @@ We recall the classification errors in the above code:
 ```
 
 We now recheck if misclassification improves when cross-validiting by a 10fold crossvalidations our model:
-
 
 ```{r}
 n <- nrow(insurance)
@@ -1930,7 +1925,7 @@ print(err.cv)
 
 ```
 
-We see here that with 66.99%, our misclassification error has not much improved with crossvalidation. In fact, it even has gotten a bit worse.
+We see here that with 66.99%, our misclassification error has not much improved with crossvalidation. In fact, it even has gotten a bit worse in comparison with tree.classification.region.pred.error.1.
 
 
 ## Cross-validation for SVM

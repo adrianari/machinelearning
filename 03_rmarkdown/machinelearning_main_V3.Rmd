@@ -6,6 +6,7 @@ output:
   html_document:
     number_sections: yes
     toc: yes
+    toc_float: yes
   pdf_document:
     number_sections: yes
     toc: yes
@@ -1768,11 +1769,11 @@ Regression (charges)
 * tree.regression.charges #regression tree
 
 Classification (smoker)
-* gam.insurance.1$call
-* bestmod$call #svm
+* glm.smoker.2 #glm
+* bestmod #svm
 * nn3 #neural network
 
-
+### Regression (dependent variable "charges")
 
 The in sample performance, using R Squared as measure is the following: 
 
@@ -1879,9 +1880,117 @@ When having a closer look at the boxplots however, one can see the difference in
 
 Here, one can alsi directly see the importance of cross-validation: as one practically plays with the chances when performing a train <-> test approach, one cannot take such results as true. It can be that one ends up on either end of the scale / boxplot.  
 
+### Classification (Dependent Variable "smoker")
+
+Throughout the analysis, 3 models have been used to make a classification for smoker/non-smoker. Those models will be cross validated: 
+
+```{r}
+glm.smoker.2$call #glm
+bestmod$call #svm
+nn3$call #neural network
+
+```
 
 
-## Cross-Validation for Classification Trees
+
+```{r}
+
+set.seed(5)
+
+MC.1 <- c()
+MC.2 <- c()
+MC.3 <- c()
+
+
+for(i in 1:10){
+  
+  train.YES <- sample(x = c(TRUE, FALSE),
+                      size = nrow(insurance),
+                      replace = TRUE)
+  
+  insurance.train <- insurance[train.YES, ]
+  
+  insurance.test <- insurance[!train.YES, ]
+  
+  insurance.train.normalized <-dplyr::select(insurance.train, smoker, charges, age, bmi)
+  insurance.test.normalized <-dplyr::select(insurance.test, smoker, charges, age, bmi)
+  
+  #insurance.train.normalized <- cbind(insurance.train$smoker, insurance.train$charges, insurance.train$age, insurance.train$bmi)
+  
+    #insurance.test.normalized <- cbind(insurance.test$smoker, insurance.test$charges, insurance.test$age, insurance.test$bmi)
+  
+  
+  
+  # Min-Max Normalization for neural networks
+  insurance.train.normalized$charges <- (insurance.train.normalized$charges - min(insurance.train.normalized$charges))/(max(insurance.train.normalized$charges) - min(insurance.train.normalized$charges)) 
+  insurance.train.normalized$age <- (insurance.train.normalized$age - min(insurance.train.normalized$age))/(max(insurance.train.normalized$age) - min(insurance.train.normalized$age)) 
+  insurance.train.normalized$bmi <- (insurance.train.normalized$bmi - min(insurance.train.normalized$bmi))/(max(insurance.train.normalized$bmi)-min(insurance.train.normalized$bmi)) 
+  
+  
+  insurance.test.normalized$charges <- (insurance.test.normalized$charges - min(insurance.test.normalized$charges))/(max(insurance.test.normalized$charges) - min(insurance.test.normalized$charges)) 
+  insurance.test.normalized$age <- (insurance.test.normalized$age - min(insurance.test.normalized$age))/(max(insurance.test.normalized$age) - min(insurance.test.normalized$age)) 
+  insurance.test.normalized$bmi <- (insurance.test.normalized$bmi - min(insurance.test.normalized$bmi))/(max(insurance.test.normalized$bmi)-min(insurance.test.normalized$bmi))
+  
+  
+  # fit model with train data 
+  
+  mod.1 <- glm(formula = smoker ~ age + bmi + charges, family = "binomial", 
+               data = insurance.train)
+  
+  mod.2 <- svm(smoker~charges+bmi, data = insurance.train, cost =5)
+  
+  nn3 <- neuralnet(smoker~charges + age + bmi,
+                   data = insurance.train.normalized,
+                   hidden = c(3,2,1),
+                   threshold = 0.0025,
+                   lifesign = 'full', 
+                   lifesign.step = 500,
+                   linear.output = FALSE)
+  
+  
+  # make prediction on test data
+  
+  #mod1
+  mod.1.pred <- predict(mod.1, newdata = insurance.test, type="response")
+  mod.1.pred.binomial <- ifelse(mod.1.pred > 0.5, yes = 1, no = 0)
+  df.mod.1.pred <- data.frame(obs = insurance.test$smoker, fitted = mod.1.pred.binomial)
+  mc.table.1 <- table(obs = df.mod.1.pred$obs,fit = df.mod.1.pred$fitted)
+  MC.1[i] <- (mc.table.1[2]+mc.table.1[3])/(mc.table.1[2]+mc.table.1[3]+mc.table.1[1]+mc.table.1[4])
+ 
+  #mod2 
+  mod.2.pred <- predict(mod.2, newdata = insurance.test)
+  df.mod.2.pred <- data.frame(obs = insurance.test$smoker, fitted = mod.2.pred)
+  mc.table.2 <- table(obs = df.mod.2.pred$obs,fit = df.mod.2.pred$fitted)
+  MC.2[i] <- (mc.table.2[2]+mc.table.2[3])/(mc.table.2[2]+mc.table.2[3]+mc.table.2[1]+mc.table.2[4])
+  
+  #mod3
+  
+  prediction_nn3 <- predict(nn3,insurance.test.normalized) 
+  class_nn <- apply(prediction_nn3, 1, which.max)
+  df.mod.3.pred <- data.frame(obs = insurance.test$smoker, fitted = class_nn)
+  mc.table.3 <- table(obs = df.mod.3.pred$obs,fit = df.mod.3.pred$fitted)
+  MC.3[i] <- (mc.table.3[2]+mc.table.3[3])/(mc.table.3[2]+mc.table.3[3]+mc.table.3[1]+mc.table.3[4])
+  
+}
+```
+
+
+The following are the misclassification rates of our models:
+
+```{r}
+#misclassification rates of the models
+#glm
+mean(MC.1)
+#svm
+mean(MC.2)
+#neuralnet
+mean(MC.3)
+```
+We can observe that all models have a misclassification rate of around 4-5.5%. The model that performs best is the svm. The model that perfoms worst, but still reasonably well is the neural network. 
+
+
+
+### Cross-Validation for Classification Trees
 
 We recall the classification errors in the above code:
 ```{r}
@@ -1927,26 +2036,3 @@ print(err.cv)
 
 We see here that with 66.99%, our misclassification error has not much improved with crossvalidation. In fact, it even has gotten a bit worse in comparison with tree.classification.region.pred.error.1.
 
-
-## Cross-validation for SVM
-```{r}
-library(caret)
-folds = createFolds(insurance$smoker, k = 10)
-cv = lapply(folds, function(x) {
-  training_fold = insurance[-x, ] 
-  test_fold = insurance[x, ] 
-  classifier = svm(formula = smoker ~ .,
-                   data = training_fold,
-                   type = 'C-classification',
-                   kernel = 'linear')
-  # next step in the loop, we calculate the predictions and cm and we equate the accuracy
-  # note we are training on training_fold and testing its accuracy on the test_fold
-  y_pred = predict(classifier, newdata = test_fold[-5])
-  cm = table(test_fold[, 5], y_pred)
-  print(cm)
-  accuracy = (cm[1,1] + cm[2,2]) / (cm[1,1] + cm[2,2] + cm[1,2] + cm[2,1])
-  return(accuracy)
-})
-
-print(accuracy)
-```

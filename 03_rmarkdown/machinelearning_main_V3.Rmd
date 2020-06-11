@@ -785,7 +785,7 @@ Our residual mean deviance (R-squared-error) us at 0.1592. Note that this value 
 
 #### Prediction
 
-We are now again predicting the data that has already been used for training the modell.
+We are now again predicting the data that has already been used for training the model.
 
 ```{r}
 tree.regression.charges.pred <- predict(tree.regression.charges, insurance, type="vector")

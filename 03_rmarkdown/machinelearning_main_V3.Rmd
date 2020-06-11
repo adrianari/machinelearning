@@ -289,7 +289,7 @@ Before performing several posthoc test and repeating this exercise to all possib
 ggplot(data=insurance,
        mapping = aes(y = charges, x= age))+ geom_point()+geom_smooth(method = 'lm') + facet_grid(. ~region)
 ```
-Using the visualization it seems that there seems to be no obvious difference and effect. Therefore, we decide to drop also the variable region from our linear model.
+Using the visualization, it seems that there seems to be no obvious difference and effect. Therefore, we decide to drop also the variable region from our linear model.
 
 ### Dropping variables from the model  
 

@@ -609,7 +609,7 @@ table(obs = d.obs.fit.smoker$obs,
 
 ## Regression trees
 
-### Inspectig the Data
+### Inspecting the Data
 
 To start of with our regression trees, we throw a glance at the continuous variables:
 

@@ -780,7 +780,7 @@ If one smokes seems to be the crucial factor to start of the charges classificat
 summary(tree.regression.charges)
 ```
 
-Our residual mean deviance (R-squared-error) us at 0.1592. Note that this value is also log transformed as the numbers on which it has been calculated are log transformed.
+Our residual mean deviance (R-squared-error) us at 0.1592.
 
 
 #### Prediction
@@ -1773,8 +1773,8 @@ The in sample performance, using R Squared as measure is the following:
 ```{r}
 summary(lm.insurance.3)$r.squared
 summary(lm.insurance.all)$r.squared
-summary(tree.regression.charges)$r.squared
-summary(rf.insurance)$r.squared
+summary(tree.regression.charges)
+
 
 ```
 
@@ -1858,6 +1858,10 @@ mean(RMSE.2)
 mean(RMSE.3)
 
 ```
+
+As one can see, the best linear model also performs in cross-validation as the better in comparison with the linear model with all variables as well as the decision tree. This is not very astonishing, as with more variables, the more variance once gets. 
+
+What is interesting to see, is that the lm modell with all the variables and the regression tree perform very similarly. 
 
 
 

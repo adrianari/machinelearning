@@ -1891,7 +1891,30 @@ nn3$call #neural network
 
 ```
 
-
+```{r include=FALSE}
+#getwd()
+#setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
+insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
+str(insurance)
+# smoker = 1 / nonsmoker = 0
+insurance$smoker <- as.character(insurance$smoker)
+insurance$smoker[insurance$smoker == "yes"] <- "1"
+insurance$smoker[insurance$smoker == "no"] <- "0"
+insurance$smoker <- as.factor(insurance$smoker)
+# female = 1 / male = 0
+insurance$sex <- as.character(insurance$sex)
+insurance$sex[insurance$sex == "female"] <- "1"
+insurance$sex[insurance$sex == "male"] <- "0"
+insurance$sex <- as.factor(insurance$sex)
+# region / SE = 1 / SW = 0 / NE = 2 / NW = 3
+insurance$region <- as.character(insurance$region)
+insurance$region[insurance$region == "southwest"] <- "1"
+insurance$region[insurance$region == "southeast"] <- "0"
+insurance$region[insurance$region == "northeast"] <- "2"
+insurance$region[insurance$region == "northwest"] <- "3"
+insurance$region <- as.factor(insurance$region)
+head(insurance)
+```
 
 ```{r}
 
@@ -1914,12 +1937,7 @@ for(i in 1:10){
   
   insurance.train.normalized <-dplyr::select(insurance.train, smoker, charges, age, bmi)
   insurance.test.normalized <-dplyr::select(insurance.test, smoker, charges, age, bmi)
-  
-  #insurance.train.normalized <- cbind(insurance.train$smoker, insurance.train$charges, insurance.train$age, insurance.train$bmi)
-  
-    #insurance.test.normalized <- cbind(insurance.test$smoker, insurance.test$charges, insurance.test$age, insurance.test$bmi)
-  
-  
+
   
   # Min-Max Normalization for neural networks
   insurance.train.normalized$charges <- (insurance.train.normalized$charges - min(insurance.train.normalized$charges))/(max(insurance.train.normalized$charges) - min(insurance.train.normalized$charges)) 

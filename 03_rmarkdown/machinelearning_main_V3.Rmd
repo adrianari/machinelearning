@@ -115,7 +115,7 @@ This plot is showing a clear effect of smoking on the charges. As one can see, p
 plot(charges ~ region, data =insurance, main = 'Charges against region')
 ```
 
-In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small diferences between the width of the boxes, distribution of 50% of the observation as well the setting of the upper whisker. Those differences will be analysed later.
+In this case, there seems not to be any clear relationship or trend visible between region and charges. Comparing the four regions with each other, it seems that there are slightly small differences between the width of the boxes, distribution of 50% of the observation as well the setting of the upper whisker. Those differences will be analysed later.
 
 ## Basic analysis of categorical and continous variables  
 

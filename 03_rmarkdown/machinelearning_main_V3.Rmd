@@ -309,7 +309,7 @@ lm.insurance.2 <- update(lm.insurance.1, .~. +age:bmi + age:children + age:smoke
 summary(lm.insurance.2)
 ```
 As the above output shows, not all of the added interactions have to be considered in the model. 
-Upfront we also tried to generate a linear model including all possible interactions. Since the output was not satisfying we skiped this analysis at this point. 
+Upfront we also tried to generate a linear model including all possible interactions. Since the output was not satisfying we skipped this analysis at this point. 
 Therefore, the working assumption in this step was quite easy by editing only possible and simple interactions. Based on the results we will now drop the unnecessary interactions.
 ```{r}
 drop1(lm.insurance.2, test="F")

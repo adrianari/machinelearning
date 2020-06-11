@@ -274,9 +274,9 @@ lm.region.1 <- lm(charges ~ region, data = insurance)
 aggregate(charges ~ region, FUN = mean, data =insurance)
 summary(lm.region.1)
 ```
-There is strong evidence that the mean charges for northeast is not eqaual to zero.
+There is strong evidence that the mean charges for northeast is not equal to zero.
 But there isn't any evidence that all other regions differ from the reference region northeast.
-To have a better understanding we will make an anova test between the above shown model and a base model lm.region.0 as schon below.
+To have a better understanding we will make an anova test between the above shown model and a base model lm.region.0 as shown below.
 ```{r}
 lm.region.0 <- lm(charges ~ 1 , data = insurance)
 coef(lm.region.0)

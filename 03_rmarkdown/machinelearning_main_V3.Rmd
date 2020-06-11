@@ -211,7 +211,7 @@ In this subset, we will consider also the sex for modelling a simple regression 
 lm.insurance.2 <- lm(charges ~ age + sex, data = insurance)
 summary(lm.insurance.2)
 ```
-As the output shows the additionally added variable of sex with a calculated p-value of 0.0149 seems to have an effect on charges and therefore should be considerd within the modelling process.
+As the output shows the additionally added variable of sex with a calculated p-value of 0.0149 seems to have an effect on charges and therefore should be considered within the modelling process.
 
 #### Including interaction  
 

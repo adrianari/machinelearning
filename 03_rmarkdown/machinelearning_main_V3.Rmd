@@ -107,7 +107,7 @@ plot(charges ~ sex, data =insurance, xlab = "male = 0 / female = 1",  main = 'Ch
 As shown above there are some differences in the charges, comparing the boxplot for the two given genders, whereas 0 stands for male, 1 stands for female. It seems that the range for 50% of the male observations is bigger than the one for the female group, meaning the distribution for males is broader than the one for females. Also the upper whisker is about 10'000 lower than the same for the male group.
 
 ```{r}
-plot(charges ~ smoker, data =insurance, main = 'Charges against smoker')
+plot(charges ~ smoker, data =insurance, xlab = "nonsmoker = 0 / smoker = 1, ", main = 'Charges against smoker')
 ```
 
 This plot is showing a clear effect of smoking on the charges. As one can see, people who are not smoking (value = 0) have mean charges that are three times lower than the charges for smokers (value = 1). Even the outliers of the non-smokers are still within the range of the upper boxplot quartil of the smokers.

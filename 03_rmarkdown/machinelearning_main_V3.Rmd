@@ -1778,7 +1778,7 @@ summary(tree.regression.charges)
 
 ```
 
-As decision trees do not work with an R-squared value per se, we take the residual mean deviance for the decision trees (here at 0.1592). The residual mean deviance (0.1592) can be considered as R-squared error. 
+As decision trees do not work with an R-squared value per se, we take the residual mean deviance for the decision trees (here at 0.1592). The residual mean deviance (0.1592) can be considered as R-squared error. Interpreting error as 1 - R-squared, we receive roughly similar values for the three variables.
 
 
 The out of sample performance is computed by using 50:50 training and test data and repeating the process 100 times. 

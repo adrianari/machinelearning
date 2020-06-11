@@ -33,6 +33,7 @@ library(tibble)
 library(MASS)
 library(gbm)
 library(ipred)
+library(Metrics)
 library(neuralnet) # for NN
 library(h2o)       # for NN
 library(bit64)     # for NN
@@ -1835,10 +1836,10 @@ for(i in 1:100){
 
   #RMSE
   
-  RMSE.1[i] <- RMSE(lm.insurance.3.predict, insurance.test$charges)
-  RMSE.2[i] <- RMSE(lm.insurance.all.predict, insurance.test$charges)
-  RMSE.3[i] <- RMSE(tree.regression.charges.predict, insurance.test$charges)
-  RMSE.4[i] <- RMSE(rf.insurance.predict, insurance.test$charges)
+  RMSE.1[i] <- rmse(lm.insurance.3.predict, insurance.test$charges)
+  RMSE.2[i] <- rmse(lm.insurance.all.predict, insurance.test$charges)
+  #RMSE.3[i] <- RMSE(tree.regression.charges.predict, insurance.test$charges)
+  #RMSE.4[i] <- RMSE(rf.insurance.predict, insurance.test$charges)
   
     }
 
@@ -1853,9 +1854,9 @@ mean(RMSE.1)
 #lm.all
 mean(RMSE.2)
 #tree regression
-mean(RMSE.3)
+#mean(RMSE.3)
 #random forest
-mean(RMSE.4)
+#mean(RMSE.4)
 ```
 
 ```{r}

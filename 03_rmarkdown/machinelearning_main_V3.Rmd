@@ -3,13 +3,13 @@ title: "Machine Learning I Group Work"
 author: "Adriana Ricklin, Yvonne Schaerli, Christina Sudermann, Carole Mattmann"
 date: "11 June 2020"
 output: 
+  pdf_document:
+    number_sections: yes
+    toc: yes
   html_document:
     number_sections: yes
     toc: yes
     toc_float: yes
-  pdf_document:
-    number_sections: yes
-    toc: yes
 ---
 
 
@@ -97,7 +97,7 @@ The above plot is not showing a clear linear relationship between bmi and the co
 plot(charges ~ children, data =insurance, main = 'Charges against children')
 ```
 
-There might be an affect between the number of children and charges. As shown above, it might be possible to interpret that with a rising number of children the charges are decreasing. Still, this is not a clear relationship, more a wide interpretation of the plot. Not taken into consideration has been the number of participants per group, meaning that our interpretation of the plot leaves out that there are much more people with 0 children than there are with 4 or 5.
+There might be a connection between the number of children and charges. As shown above, it might be possible to interpret that with a rising number of children the charges are decreasing. Still, this is not a clear relationship, more a wide interpretation of the plot. Not taken into consideration has been the number of participants per group, meaning that our interpretation of the plot leaves out that there are much more people with 0 children than there are with 4 or 5.
 
 ## Basic analysis of categorical variables
 
@@ -1761,21 +1761,12 @@ nn3$call
 
 ## Cross validation
 
-As the models have different dependent variables and are different types (regression/classification) it is difficult to compare all numerically. To do a cross validation, the regression models with charges as dependent variables are used. These are the following: 
+As the models have different dependent variables and are different types (regression/classification) it is difficult to compare all numerically. To do a cross validation, the regression models with charges as dependent variables are compared and the same for classification models with dependent variable smoker. 
 
-Regression (charges)
-* lm.insurance.3 #best lm
-* lm.insurance.all # lm with all variables
-* tree.regression.charges #regression tree
-
-Classification (smoker)
-* glm.smoker.2 #glm
-* bestmod #svm
-* nn3 #neural network
 
 ### Regression (dependent variable "charges")
 
-The in sample performance, using R Squared as measure is the following: 
+The in sample performance, using R Squared as measure is the following for the 3 selected models. 
 
 ```{r}
 summary(lm.insurance.3)$r.squared
@@ -2055,7 +2046,7 @@ print(err.cv)
 We see here that with 66.99%, our misclassification error has not much improved with crossvalidation. In fact, it even has gotten a bit worse in comparison with tree.classification.region.pred.error.1.
 
 
-#Final words
+# Final words
 
 In the analysed data set, we got a lot of different insights on various sides. We learned that not every variable might be of importance for certain forecasts - or at least that not enough data is available at the time in order to do so. We think here of the variable "region" which performed not very good in terms of prediction for most of the models.
 
@@ -2065,10 +2056,3 @@ All in all, it was very interesting to see the theory performing in practice and
 
 And "most" importantly, what we learned in this project and which is clearly documented: smoking is not only bad for the health, it is also bad for ones wallet. Never smoke, kids!
 
-
-
-
-
-
-
-Our data 

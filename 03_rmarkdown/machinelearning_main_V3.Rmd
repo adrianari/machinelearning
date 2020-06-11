@@ -807,7 +807,7 @@ abline(sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
 abline(-sd(error_regression.charges1) ,0, lwd=2, col="red", lty="dotted")
 ```
 
-We  can furthermore clearly see that the residuals are roughly normalized, with an approximate mean of 0. Outliers are however more distributed in the negative axis of y than in the postiive.
+We  can furthermore clearly see that the residuals are roughly normalized, with an approximate mean of 0. Outliers are however more distributed in the negative axis of y than in the positive.
 
 
 ```{r}

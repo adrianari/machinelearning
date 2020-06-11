@@ -194,7 +194,7 @@ lm.insurance <- lm(charges ~ age, data = insurance)
 summary(lm.insurance)
 ```
 
-#### Coefficent and Interpretation  
+#### Coefficient and Interpretation  
 
 As shown in the R Output a person with the age of 0 will have a base charge of 3165.885. This intercept and its interpretation seems to be nonsensical, thus one needs to pay attention in what extend this model can be applied.
 

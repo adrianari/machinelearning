@@ -819,7 +819,7 @@ The above boxplot further demonstrates that there is a slight bias in the distri
 
 
 ```{r}
-hist(error_regression.charges1, main = "Histrogram of the Error for charges")
+hist(error_regression.charges1, main = "Histogram of the Error for charges")
 ```
 
 Here goes to further show that the data points are slightly skewed. However, mean of the residuals is still roughly at 1. 
@@ -1792,7 +1792,7 @@ RMSE.2 <- c()
 RMSE.3 <- c()
 RMSE.4 <- c()
 
-
+library(Metrics)
 
 for(i in 1:100){
   
@@ -1838,8 +1838,10 @@ for(i in 1:100){
   
   RMSE.1[i] <- rmse(lm.insurance.3.predict, insurance.test$charges)
   RMSE.2[i] <- rmse(lm.insurance.all.predict, insurance.test$charges)
-  #RMSE.3[i] <- RMSE(tree.regression.charges.predict, insurance.test$charges)
-  #RMSE.4[i] <- RMSE(rf.insurance.predict, insurance.test$charges)
+  RMSE.3[i] <- sqrt((sum(insurance.test[3]-tree.regression.charges.predict[3])^2)/length(insurance.test))
+    
+    
+
   
     }
 
@@ -1854,9 +1856,7 @@ mean(RMSE.1)
 #lm.all
 mean(RMSE.2)
 #tree regression
-#mean(RMSE.3)
-#random forest
-#mean(RMSE.4)
+mean(RMSE.3)
 ```
 
 ```{r}
@@ -1864,7 +1864,6 @@ par(mfrow=c(1,4))
 boxplot(RMSE.1, main="lm.3")
 boxplot(RMSE.2, main="lm.all")
 boxplot(RMSE.3, main="regression tree")
-boxplot(RMSE.4, main="random forest")
 ```
 
 

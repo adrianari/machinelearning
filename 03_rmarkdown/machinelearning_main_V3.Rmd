@@ -1881,9 +1881,17 @@ Here, one can alsi directly see the importance of cross-validation: as one pract
 
 
 
-## Cross-Validation for Decision Trees
+## Cross-Validation for Classification Trees
 
-### Classification Tree
+We recall the classification errors in the above code:
+```{r}
+(tree.classification.region.pred.error)
+(tree.classification.region.pred.error2)
+```
+
+We now recheck if misclassification improves when cross-validiting our model:
+
+
 ```{r}
 n <- nrow(insurance)
 K <- 10

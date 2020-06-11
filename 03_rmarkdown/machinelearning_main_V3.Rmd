@@ -854,7 +854,7 @@ mtext("Regression tree for Charges, using train data \n")
 
 ```
 
-We now receive a tree with exactly the same number of nodes but where the criterias have different values, except for the first node, which remain the same (non-smoker --> left branch, smoker --> right branch).
+We now receive a tree with exactly the same number of nodes but where the criteria have different values, except for the first node, which remain the same (non-smoker --> left branch, smoker --> right branch).
 
 ```{r}
 summary(tree.regression.charges2)
@@ -902,7 +902,7 @@ tree.classification.region_all <- tree(region~., data=insurance)
 summary(tree.classification.region_all)
 ```
 
-We here receive a classification tree with four end nodes. Furthermore our RMS is at 2.604 and the misclassification rate - which is basically the RSS for classification trees - is at at 65.47%.
+We here receive a classification tree with four end nodes. Furthermore our RMS is at 2.604 and the misclassification rate - which is basically the RSS for classification trees - is at 65.47%.
 
 ```{r}
 plot(tree.classification.region_all)
@@ -984,7 +984,7 @@ for (i1 in 1:3) {
 (tree.classification.region.pred.error <- 1 - tree.classification.region.pred.rate) 
 ```
 
-Whereas the model performed a bit better with the train data in comparison with the entire data set, the model now clearly performs in an all time bad. The training modell is thus a clear overfit.
+Whereas the model performed a bit better with the train data in comparison with the entire data set, the model now clearly performs in an all time bad. The training model is thus a clear overfit.
 
 It seems that region, considering the constant high error quote for entire data set, train set as well as test set, is not a variable that has a large connection with the other variables used. 
 
@@ -994,7 +994,7 @@ It seems that region, considering the constant high error quote for entire data 
 
 We now continue to prune the trees as so far, we actually managed to create an overfit of our train data in comparison to our test data.
 
-### Pruning the continous BMI variable
+### Pruning the continuous BMI variable
 
 We recall: the bmi showed a clear overfit when comparing the RSS of train <-> test data:
 train = 27.21
@@ -1013,7 +1013,7 @@ With cvtree, the crossvalidation is done automatically for one. We here see that
 tree.regression.bmi.pruning
 ```
 
-What is intersting to see is that between the number of end nodes 4 and 7, there is a slight growth as well as decline in terms of variance, so the slope inbetween is both negative as well as positive.
+What is interesting to see is that between the number of end nodes 4 and 7, there is a slight growth as well as decline in terms of variance, so the slope inbetween is both negative as well as positive.
 
 
 ```{r}
@@ -1052,7 +1052,7 @@ Unsurprisingly, the error for the pruned tree (30.42) is still higher because wi
 ### Pruning regions
 
 We now prune our classification tree, meaning the tree with the categorical variable.
-By setting FUN to prune.misclass, we communicate that this decision tree will be handling a continous variable.
+By setting FUN to prune.misclass, we communicate that this decision tree will be handling a continuous variable.
 
 ```{r}
 tree.classification.region.pruning <- cv.tree(tree.classification.region, FUN = prune.misclass)
@@ -1147,7 +1147,7 @@ abline(0,1, col="red")
 
 On the x-axis, we see the prediction, whereas on the y-axis, the real value (logarithmic).
 
-We also compute the mean: in comparison with the previously caluclated mean value, we can say they are rather related than not, however with some deviance.
+We also compute the mean: in comparison with the previously calculated mean value, we can say they are rather related than not, however with some deviance.
 
 ```{r}
 mean((yhat.bag-insurance.test[,"charges"])^2)
@@ -1167,7 +1167,7 @@ importance(bag.insurance.2)
 varImpPlot(bag.insurance.2)
 ```
 
-We here see that age and if one smokes are of biggest influence on charges. Age also seems fairly imporant.
+We here see that age and if one smokes are of biggest influence on charges. Age also seems fairly important.
 
 
 ## Random Forests
@@ -1381,7 +1381,7 @@ confusion.poly.test <- table(predict = predict(bestmod.poly, insurance.test),
 In this section we will create and train a neural network which should be able to classify if a person is a smoker (output) based on the information of age, bmi and charges that are provided as input factors for the model. The assumption of the input variables is retrieved from our analysis already done in section 6. Generalized Linear Models.  
 
 ### Cleaning and Normalization  
-This part will be needed to ensure a cleansed and normalized database for a proper modeling of neural networks.
+This part will be needed to ensure a cleansed and normalized database for a proper modelling of neural networks.
 ```{r}
 #setwd("~/GitHub/machinelearning/machinelearning/03_rmarkdown") #adrianas extrawurst
 insurance <- read.csv("../01_data/insurance.csv", header=TRUE)
@@ -1700,7 +1700,7 @@ Since the results are not reflecting this assumption and all performance results
 
 ## Model overview
 
-Troughout the analysis, many different model are applied. Here is a quick overview of the models used that performed the best:
+Throughout the analysis, many different model are applied. Here is a quick overview of the models used that performed the best:
 
 ### Linear models (standard lm)
 

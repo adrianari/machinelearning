@@ -1778,7 +1778,7 @@ summary(tree.regression.charges)
 
 ```
 
-
+As decision trees do not work with an R-squared value per se, we take the residual mean deviance for the decision trees (here at 0.1592). The residual mean deviance (0.1592) can be considered as R-squared error. 
 
 
 The out of sample performance is computed by using 50:50 training and test data and repeating the process 100 times. 
@@ -1873,6 +1873,9 @@ boxplot(RMSE.3, main="regression tree")
 ```
 
 
+When having a closer look at the boxplots however, one can see the difference in the methods. The linear models perform very regularily and very symmetrically, whereas decision trees have a much larger distribution.
+
+Here, one can alsi directly see the importance of cross-validation: as one practically plays with the chances when performing a train <-> test approach, one cannot take such results as true. It can be that one ends up on either end of the scale / boxplot.  
 
 
 

@@ -2054,3 +2054,21 @@ print(err.cv)
 
 We see here that with 66.99%, our misclassification error has not much improved with crossvalidation. In fact, it even has gotten a bit worse in comparison with tree.classification.region.pred.error.1.
 
+
+#Final words
+
+In the analysed data set, we got a lot of different insights on various sides. We learned that not every variable might be of importance for certain forecasts - or at least that not enough data is available at the time in order to do so. We think here of the variable "region" which performed not very good in terms of prediction for most of the models.
+
+Then there is the other side of performance: models that can predict at a very good rate if somebody is a smoker or not, with an astonishingly low error margin of 5%. 
+
+All in all, it was very interesting to see the theory performing in practice and to get to know what kind of insights one receives by these machine learning technique hands on.
+
+And "most" importantly, what we learned in this project and which is clearly documented: smoking is not only bad for the health, it is also bad for ones wallet. Never smoke, kids!
+
+
+
+
+
+
+
+Our data 
